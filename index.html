@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
 <title>Heat and cold stress decision aid — Live</title>
 <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 <style>
@@ -376,224 +377,235 @@ button {
   #plot { height: 74vh; border: none; }
   @page { size: landscape; margin: 8mm; }
 }
+
+:root{--bg:#f2f6f7;--panel:#fff;--border:#dce5e8;--ink:#20343e;--accent:#147d83}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{max-width:1240px;padding:24px}.app-header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px}.app-header h1{font-size:25px;letter-spacing:-.7px;margin:5px 0}.eyebrow{font-size:10px;letter-spacing:2px;color:#54757c;font-weight:800}.app-header button{width:auto}
+.status-bar{background:#fff!important;border:1px solid var(--border)!important;box-shadow:0 5px 24px #193b4610;border-radius:16px;padding:18px;align-items:center}.status-main{flex:1;gap:12px}.status-aqi-row{border:0;padding:0}.live-metrics{display:flex;flex-wrap:wrap;gap:10px 24px}.metric{display:flex;flex-direction:column;gap:3px}.metric span{font-size:11px;color:#607781}.metric strong{font-size:20px;font-weight:650}.status-aqi{padding:7px 12px;font-size:13px}.status-aqi-label{display:none}#statusText,#lastUpdated{font-size:12px;color:#607781}
+.context-panel{background:#fff;border:1px solid var(--border);border-radius:12px;margin:12px 0;padding:0 16px}.context-panel>summary{padding:14px 0;cursor:pointer;font-size:13px;font-weight:650}.context-panel[open]>summary{border-bottom:1px solid #edf1f3;margin-bottom:12px}.env-summary{margin:0 0 14px}.env-card{background:#f7fafb;border-radius:10px}.controls{grid-template-columns:repeat(2,minmax(0,1fr));margin:12px 0}.controls .card{border:0;background:#f7fafb}.controls>button{width:auto}
+button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;white-space:normal}button:hover{filter:brightness(.95)}button:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid #60bfc6;outline-offset:3px}.primary{background:#147d83}.secondary{background:#e6eef0;color:#28434d}.quaternary{background:#e1eff0;color:#14656d}.tertiary{background:#fbe9e8;color:#9f3532}.action-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.action-toolbar button{width:auto;padding:10px 16px}.chart-mode-bar{margin:18px 0 12px}.chart-mode-note{display:none}#plot{border-radius:16px;border-color:var(--border);min-height:440px;height:60vh;overflow:hidden}.hidden-legend{display:none}.modal-box{border-radius:18px;color:var(--ink)}.info-box{max-width:800px}.info-content{font-size:13px;line-height:1.6}.info-content h3{color:#14656d}.info-content code{white-space:normal;overflow-wrap:anywhere}.bibliography ol{columns:1}.bibliography,.ha-prevention{border:0;padding:0;background:transparent}.env-basis{margin:16px 0}.source-note{font-size:12px!important}.modal-overlay{backdrop-filter:blur(4px)}
+@media(max-width:760px){.wrap{padding:12px}.app-header{align-items:flex-start}.app-header h1{font-size:20px}.app-header button{max-width:125px;height:auto;min-height:44px}.controls{grid-template-columns:1fr}.status-main{flex:0 0 auto}.live-metrics{gap:12px 20px}.metric strong{font-size:18px}.action-toolbar{display:grid;grid-template-columns:1fr 1fr}.action-toolbar button{width:100%}#plot{min-height:400px}.info-box{padding:22px 16px}}
+@media print{.app-header,.context-panel,.action-toolbar{display:none!important}}
+.env-summary{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:760px){.env-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.env-summary{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="wrap">
-
+<div class="wrap"><header class="app-header"><div><span class="eyebrow">ENVIRONMENT &amp; WELLBEING</span><h1>Environmental stress dashboard</h1></div><button class="secondary" onclick="openInfoModal('referencesModal')">References &amp; methods</button></header>
 <div class="print-heading">
-  <div class="line1" id="printTitle">Heat stress decision aid chart</div>
-  <div id="date-range" style="font-size: 16px; margin-top: 8px; color: #333; font-weight: bold;"></div>
+<div class="line1" id="printTitle">Heat stress decision aid chart</div>
+<div id="date-range" style="font-size: 16px; margin-top: 8px; color: #333; font-weight: bold;"></div>
 </div>
-
 <div class="status-bar" id="statusBar">
-  <div class="status-main">
-    <div><span class="dot"></span><span id="statusText">Not connected yet.</span></div>
-    <div class="status-aqi-row"><span class="status-aqi-label">Air quality</span><span class="status-aqi" id="aqiValue" aria-live="polite">AQI —</span></div>
-  </div>
-  <div id="lastUpdated">—</div>
+<div class="status-main">
+<div class="live-metrics" id="liveMetrics"></div><div><span class="dot"></span><span id="statusText">Ready</span></div>
+<div class="status-aqi-row"><span aria-live="polite" class="status-aqi" id="stressValue">Stress —</span><span class="status-aqi-label">Air quality</span><span aria-live="polite" class="status-aqi" id="aqiValue">AQI —</span></div>
 </div>
-
-<div class="env-summary" id="environmentSummary" aria-label="Environmental summary">
-  <div class="env-card" id="envAltitudeCard" data-level="neutral">
-    <div class="env-label">Altitude</div><div class="env-value" id="envAltitudeValue">—</div><div class="env-note" id="envAltitudeNote">Waiting for location data</div>
-  </div>
-  <div class="env-card" id="envUVCard" data-level="neutral">
-    <div class="env-label">UV Index</div><div class="env-value" id="envUVValue">—</div><div class="env-note" id="envUVNote">Waiting for weather data</div>
-  </div>
-  <div class="env-card" id="envStormCard" data-level="neutral">
-    <div class="env-label">Storm / instability</div><div class="env-value" id="envStormValue">—</div><div class="env-note" id="envStormNote">Waiting for weather data</div>
-  </div>
-  <div class="env-card" id="envVisibilityCard" data-level="neutral">
-    <div class="env-label">Visibility</div><div class="env-value" id="envVisibilityValue">—</div><div class="env-note" id="envVisibilityNote">Waiting for weather data</div>
-  </div>
+<div id="lastUpdated">—</div>
 </div>
-<details class="env-basis" id="environmentBasis">
-  <summary>Summary strip basis &amp; references</summary>
-  <p><strong>Altitude:</strong> terrain elevation from Open-Meteo/Copernicus DEM, displayed in metres and feet; ≥2,450 m (about 8,000 ft) is flagged because altitude illness can occur in unacclimatized people, while the preventive staged schedule below begins at 2,700 m (about 9,000 ft). <strong>UV:</strong> WHO categories (0–2 Low, 3–5 Moderate, 6–7 High, 8–10 Very high, 11+ Extreme). <strong>Storm:</strong> WMO thunderstorm weather codes are prioritised; otherwise CAPE is shown as a screening indicator of atmospheric instability, not as an official storm warning. <strong>Visibility:</strong> modelled viewing distance; &lt;1 km is flagged as fog-range visibility per WMO.</p>
-  <p><a href="https://open-meteo.com/en/docs/elevation-api" target="_blank" rel="noopener">Open-Meteo elevation</a> · <a href="https://www.cdc.gov/yellow-book/hcp/environmental-hazards-risks/high-altitude-travel-and-altitude-illness.html" target="_blank" rel="noopener">CDC altitude illness</a> · <a href="https://www.who.int/docs/default-source/inaugural-who-partners-forum/the-uv-index-sun-protection-table-notes-on-supplied-clipart.pdf" target="_blank" rel="noopener">WHO UV Index</a> · <a href="https://www.weather.gov/ilx/swop-severetopics-CAPE" target="_blank" rel="noopener">NOAA/NWS CAPE</a> · <a href="https://cloudatlas.wmo.int/fog-as-seen-from-aircraft.html" target="_blank" rel="noopener">WMO fog definition</a>. For severe-weather decisions in India, confirm against <a href="https://mausam.imd.gov.in/" target="_blank" rel="noopener">IMD warnings</a>.</p>
-</details>
-
-<details class="ha-prevention" id="highAltitudePrevention">
-  <summary>High-altitude preventive guidance</summary>
-  <div class="ha-context" id="haContext">Use this section when planning ascent to or stay at higher elevations.</div>
-
-  <h3>1. Gradual ascent</h3>
-  <ul>
-    <li>Do not go too high too fast. Above 2,700 m (about 9,000 ft), keep the gain in <strong>sleeping altitude</strong> to no more than about 500 m (1,650 ft) per day.</li>
-    <li>Allow an additional rest/acclimatization day for every 1,000–1,500 m (3,300–4,900 ft) of ascent.</li>
-    <li>Do not ascend further if symptoms compatible with acute mountain sickness develop. Resume ascent only after symptoms have completely resolved; descend if symptoms persist or worsen.</li>
-  </ul>
-
-  <h3>2. Staged acclimatization schedule</h3>
-  <div class="ha-stage-grid">
-    <div class="ha-stage"><strong>2,700–3,600 m<br>(9,000–12,000 ft) · 6 days</strong><br>Days 1–2: rest except short, easy level walks.<br>Days 3–4: slow walk 1.5–3 km; avoid steep climbs.<br>Days 5–6: walk up to 5 km and climb up to about 300 m at a slow pace.</div>
-    <div class="ha-stage"><strong>&gt;3,600–4,500 m<br>(12,000–15,000 ft) · 4 days</strong><br>Days 1–2: slow walk 1.5–3 km; avoid steep climbs.<br>Day 3: slow walk with climb up to about 300 m.<br>Day 4: climb about 300 m at a slow pace without extra load.</div>
-    <div class="ha-stage"><strong>&gt;4,500 m<br>(&gt;15,000 ft) · 4 days</strong><br>Use the same gradual activity progression as the preceding 4-day stage. Avoid rapid further ascent and excessive exertion.</div>
-  </div>
-  <p class="ha-note">Acclimatization varies between individuals and continues beyond the staged period. After a prolonged stay at low altitude, re-acclimatization is required; after more than about 4 weeks away, repeat the full staged schedule.</p>
-
-  <h3>3. Activity during early acclimatization</h3>
-  <ul>
-    <li>Keep activity light during the first 48 hours and increase exertion gradually.</li>
-    <li>Avoid unusually strenuous exercise during the first week, even if you feel well.</li>
-    <li>Physical fitness does not eliminate the risk of altitude illness.</li>
-  </ul>
-
-  <h3>4. Hydration, nutrition and substances</h3>
-  <ul>
-    <li>Maintain normal hydration; cold, dry air increases insensible fluid loss. Drink regularly, but do not force excessive fluids.</li>
-    <li>Eat regular meals with adequate carbohydrate intake during ascent and acclimatization.</li>
-    <li>Avoid alcohol during the first 48 hours at altitude and avoid sedative or respiratory-depressant medicines unless specifically prescribed.</li>
-  </ul>
-
-  <h3>5. Cold and UV protection</h3>
-  <ul>
-    <li>Use layered, dry clothing and wind protection; wind can markedly increase heat loss.</li>
-    <li>Protect exposed skin, hands, feet, head and face as cold intensity increases.</li>
-    <li>UV exposure increases with elevation. Use protective clothing, a broad-brimmed hat, UV-protective eyewear and broad-spectrum sunscreen; strengthen protection when the UV Index is 3 or above.</li>
-  </ul>
-
-  <h3>6. When to postpone ascent or descend</h3>
-  <ul>
-    <li>Postpone ascent during an acute illness, especially significant respiratory or gastrointestinal illness.</li>
-    <li>Stop further ascent for new headache with nausea, dizziness, unusual fatigue or sleep disturbance after gaining altitude.</li>
-    <li><strong>Descend and seek urgent medical help</strong> for confusion, loss of coordination, severe breathlessness at rest, rapidly worsening symptoms or marked reduction in exercise tolerance.</li>
-  </ul>
-
-  <h3>7. Preventive medication</h3>
-  <p>Medication to prevent altitude illness may be appropriate when rapid ascent is unavoidable or in people with a prior history of altitude illness. It should be considered after medical assessment rather than self-started.</p>
-  <p class="ha-note"><strong>Sources:</strong> staged schedule adapted from <em>Medical Memorandum No. 189 (2017), Problems of High Altitude</em>; general ascent and prevention principles cross-checked against CDC Yellow Book 2026 and Wilderness Medical Society 2024 guidance. See the bibliography below.</p>
-</details>
-
-<div class="controls">
-  <div class="card">
-    <label for="sourceSelect">Data source</label>
-    <select id="sourceSelect" onchange="onSourceChange()">
-      <option value="auto" selected>My current location</option>
-      <option value="location">Search by location</option>
-      <option value="manual">Manual coordinates</option>
-      <option value="manualdata">Enter weather values manually</option>
-      <option value="manualaqi">Enter AQI manually</option>
-    </select>
-
-    <div class="subfield hidden" id="locationSearchFields">
-      <div class="location-search-wrap">
-        <input type="search" id="locationSearch" placeholder="Enter city or location e.g. New Delhi" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-controls="locationSuggestions" aria-expanded="false">
-        <button type="button" id="clearLocationSearch" class="location-clear" aria-label="Clear location" title="Clear location">&times;</button>
-        <div id="locationSuggestions" class="location-suggestions hidden" role="listbox"></div>
-      </div>
-      <div class="hint">Type at least 2 characters, then select a location from the suggestions.</div>
-    </div>
-
-    <div class="subfield hidden" id="manualFields">
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <input type="text" id="manualLat" placeholder="Latitude e.g. 28.66" style="flex:1; min-width:120px;">
-        <input type="text" id="manualLon" placeholder="Longitude e.g. 77.10" style="flex:1; min-width:120px;">
-      </div>
-    </div>
-
-    <div class="subfield hidden" id="manualDataFields">
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <input type="text" id="manualTemp" placeholder="Temperature °C (optional)" style="flex:1; min-width:120px;">
-        <input type="text" id="manualRh" placeholder="Humidity % (optional; heat only)" style="flex:1; min-width:120px;">
-        <input type="text" id="manualWind" placeholder="Wind km/h (optional; cold only)" style="flex:1; min-width:120px;">
-      </div>
-      <div class="hint" id="manualDataHint">Enter only the values available. Heat assessment uses temperature + humidity; cold assessment uses temperature + wind. Humidity is not used for the cold chart and wind is not used for the heat chart.</div>
-    </div>
-
-    <div class="subfield hidden" id="manualAQIFields">
-      <form class="aqi-manual" id="aqiManualForm" novalidate>
-        <label for="manualAQI">AQI value
-          <input id="manualAQI" type="number" min="0" max="500" step="1" inputmode="numeric" placeholder="Enter a value from 0 to 500" required>
-        </label>
-        <button class="secondary" type="submit">Show AQI advice</button>
-      </form>
-      <p class="aqi-error" id="aqiError" role="alert"></p>
-    </div>
-  </div>
-
-  <div class="card">
-    <label for="useHistoricalToggle" style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:6px;">
-      <input type="checkbox" id="useHistoricalToggle" onchange="onHistoricalToggle()" style="width:auto; height:16px;">
+<details class="context-panel" id="meteorologyDetails"><summary>Altitude &amp; meteorological details</summary><div aria-label="Environmental summary" class="env-summary" id="environmentSummary">
+<div class="env-card" data-level="neutral" id="envAltitudeCard">
+<div class="env-label">Altitude</div><div class="env-value" id="envAltitudeValue">—</div><div class="env-note" id="envAltitudeNote">Waiting for location data</div>
+</div>
+<div class="env-card" data-level="neutral" id="envUVCard">
+<div class="env-label">UV Index</div><div class="env-value" id="envUVValue">—</div><div class="env-note" id="envUVNote">Waiting for weather data</div>
+</div>
+<div class="env-card" data-level="neutral" id="envStormCard">
+<div class="env-label">Storm / instability</div><div class="env-value" id="envStormValue">—</div><div class="env-note" id="envStormNote">Waiting for weather data</div>
+</div>
+<div class="env-card" data-level="neutral" id="envVisibilityCard">
+<div class="env-label">Visibility</div><div class="env-value" id="envVisibilityValue">—</div><div class="env-note" id="envVisibilityNote">Waiting for weather data</div>
+</div>
+<div class="env-card" data-level="neutral" id="envGustCard"><div class="env-label">Wind gust</div><div class="env-value" id="envGustValue">—</div><div class="env-note" id="envGustNote">Waiting for weather data</div></div><div class="env-card" data-level="neutral" id="envPressureCard"><div class="env-label">Surface pressure</div><div class="env-value" id="envPressureValue">—</div><div class="env-note" id="envPressureNote">Waiting for weather data</div></div></div></details>
+<details class="context-panel" id="settingsPanel"><summary>Location, data &amp; history options</summary><div class="controls">
+<div class="card">
+<label for="sourceSelect">Data source</label>
+<select id="sourceSelect" onchange="onSourceChange()">
+<option selected="" value="auto">My current location</option>
+<option value="location">Search by location</option>
+<option value="manual">Manual coordinates</option>
+<option value="manualdata">Enter weather values manually</option>
+<option value="manualaqi">Enter AQI manually</option>
+</select>
+<div class="subfield hidden" id="locationSearchFields">
+<div class="location-search-wrap">
+<input aria-autocomplete="list" aria-controls="locationSuggestions" aria-expanded="false" autocomplete="off" id="locationSearch" placeholder="Enter city or location e.g. New Delhi" spellcheck="false" type="search"/>
+<button aria-label="Clear location" class="location-clear" id="clearLocationSearch" title="Clear location" type="button">×</button>
+<div class="location-suggestions hidden" id="locationSuggestions" role="listbox"></div>
+</div>
+<div class="hint">Type at least 2 characters, then select a location from the suggestions.</div>
+</div>
+<div class="subfield hidden" id="manualFields">
+<div style="display:flex; gap:8px; flex-wrap:wrap;">
+<input id="manualLat" placeholder="Latitude e.g. 28.66" style="flex:1; min-width:120px;" type="text"/>
+<input id="manualLon" placeholder="Longitude e.g. 77.10" style="flex:1; min-width:120px;" type="text"/>
+</div>
+</div>
+<div class="subfield hidden" id="manualDataFields">
+<div style="display:flex; gap:8px; flex-wrap:wrap;">
+<input id="manualTemp" placeholder="Temperature °C (optional)" style="flex:1; min-width:120px;" type="text"/>
+<input id="manualRh" placeholder="Humidity % (optional; heat only)" style="flex:1; min-width:120px;" type="text"/>
+<input id="manualWind" placeholder="Wind km/h (optional; cold only)" style="flex:1; min-width:120px;" type="text"/>
+</div>
+<div class="hint" id="manualDataHint">Enter only the values available. Heat assessment uses temperature + humidity; cold assessment uses temperature + wind. Humidity is not used for the cold chart and wind is not used for the heat chart.</div>
+</div>
+<div class="subfield hidden" id="manualAQIFields">
+<form class="aqi-manual" id="aqiManualForm" novalidate="">
+<label for="manualAQI">AQI value
+          <input id="manualAQI" inputmode="numeric" max="500" min="0" placeholder="Enter a value from 0 to 500" required="" step="1" type="number"/>
+</label>
+<button class="secondary" type="submit">Show AQI advice</button>
+</form>
+<p class="aqi-error" id="aqiError" role="alert"></p>
+</div>
+</div>
+<div class="card">
+<label for="useHistoricalToggle" style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:6px;">
+<input id="useHistoricalToggle" onchange="onHistoricalToggle()" style="width:auto; height:16px;" type="checkbox"/>
       Use a specific date &amp; time
     </label>
-    <div class="subfield hidden" id="historicalFields">
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <input type="date" id="histDate" style="flex:1; min-width:140px;">
-        <input type="time" id="histTime" step="3600" style="flex:1; min-width:120px;">
-      </div>
-    </div>
-  </div>
-
-  <button class="primary" onclick="fetchAndPlot()">Refresh Now</button>
-  <button class="secondary" onclick="window.print()">Print / Save PDF</button>
-  <button class="tertiary" onclick="clearHistory()">Clear Today's Points</button>
-  <button class="quaternary" id="adviceButton" onclick="openAdvisory()">Heat Safety Advice</button>
-  <button class="quaternary" id="aqiAdviceButton" type="button" onclick="openAQIAdvisory()" disabled>AQI Health Advisory</button>
+<div class="subfield hidden" id="historicalFields">
+<div style="display:flex; gap:8px; flex-wrap:wrap;">
+<input id="histDate" style="flex:1; min-width:140px;" type="date"/>
+<input id="histTime" step="3600" style="flex:1; min-width:120px;" type="time"/>
 </div>
-
+</div>
+</div>
+<button class="secondary" onclick="window.print()">Print / Save PDF</button>
+<button class="tertiary" onclick="clearHistory()">Clear Today's Points</button>
+</div><p class="hint" id="requestDetail" role="status"></p></details><div class="action-toolbar"><button class="primary" onclick="fetchAndPlot()">Refresh Now</button><button class="quaternary" id="adviceButton" onclick="openAdvisory()">Heat Safety Advice</button><button class="quaternary" disabled="" id="aqiAdviceButton" onclick="openAQIAdvisory()" type="button">AQI Health Advisory</button><button class="secondary" onclick="openInfoModal('altitudeModal')">High-altitude guidance</button></div>
 <div class="chart-mode-bar">
-  <label for="chartMode">Chart view</label>
-  <select id="chartMode" onchange="onChartModeChange()">
-    <option value="auto" selected>Automatic (by temperature)</option>
-    <option value="heat">Heat stress chart</option>
-    <option value="cold">Cold stress chart</option>
-  </select>
-  <span class="chart-mode-note" id="chartModeNote"></span>
+<label for="chartMode">Chart view</label>
+<select id="chartMode" onchange="onChartModeChange()">
+<option selected="" value="auto">Automatic (by temperature)</option>
+<option value="heat">Heat stress chart</option>
+<option value="cold">Cold stress chart</option>
+</select>
+<span class="chart-mode-note" id="chartModeNote"></span>
 </div>
-
 <div id="plot"></div>
 
-<div class="zone-desc" id="zoneDesc" style="margin-top: 20px; font-size: 15px; text-align: center; color: #333;">
-  <strong>Green = Safe &nbsp;&nbsp; | &nbsp;&nbsp; Yellow = Caution &nbsp;&nbsp; | &nbsp;&nbsp; Red = Danger</strong>
 </div>
-<div class="chart-reference-note" id="chartReferenceNote"></div>
-
-<section class="bibliography" id="bibliography">
-  <h2>Bibliography &amp; advisory references</h2>
-  <ol>
-    <li>US National Weather Service / Weather Prediction Center. <a href="https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml" target="_blank" rel="noopener">Heat Index Equation</a>.</li>
-    <li>CDC/NIOSH. <a href="https://www.cdc.gov/niosh/heat-stress/communication-resources/app.html" target="_blank" rel="noopener">Heat Stress: Heat Index and WBGT guidance</a>.</li>
-    <li>US Occupational Safety and Health Administration. <a href="https://www.osha.gov/heat-exposure/water-rest-shade" target="_blank" rel="noopener">Heat: Water, Rest, Shade</a>.</li>
-    <li>US National Weather Service. <a href="https://www.weather.gov/safety/cold-wind-chill-chart" target="_blank" rel="noopener">Wind Chill Chart and calculation range</a>.</li>
-    <li>Environment and Climate Change Canada. <a href="https://www.canada.ca/en/services/environment/weather/severeweather/wind-chill-index.html" target="_blank" rel="noopener">Wind Chill Index and risk bands</a>.</li>
-    <li>US Occupational Safety and Health Administration. <a href="https://www.osha.gov/emergency-preparedness/guides/cold-stress" target="_blank" rel="noopener">Cold Stress Guide</a>.</li>
-    <li>World Health Organization. <a href="https://www.who.int/publications/i/item/9789241550376" target="_blank" rel="noopener">WHO Housing and Health Guidelines</a> — indoor cold and the 18°C benchmark.</li>
-    <li>World Health Organization. <a href="https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-(uv)-index" target="_blank" rel="noopener">Ultraviolet (UV) Index and sun protection</a>.</li>
-    <li>World Meteorological Organization, International Cloud Atlas. <a href="https://cloudatlas.wmo.int/fog-as-seen-from-aircraft.html" target="_blank" rel="noopener">Fog definition and visibility below 1,000 m</a>.</li>
-    <li>NOAA / National Weather Service. <a href="https://www.weather.gov/ilx/swop-severetopics-CAPE" target="_blank" rel="noopener">Convective Available Potential Energy (CAPE)</a> — instability screening context.</li>
-    <li>Central Pollution Control Board, India. <a href="https://cpcb.nic.in/" target="_blank" rel="noopener">National Air Quality Index</a> — AQI categories and health statements.</li>
-    <li>CDC Yellow Book 2026. <a href="https://www.cdc.gov/yellow-book/hcp/environmental-hazards-risks/high-altitude-travel-and-altitude-illness.html" target="_blank" rel="noopener">High-Altitude Travel and Altitude Illness</a>.</li>
-    <li>Luks AM, et al. Wilderness Medical Society Clinical Practice Guidelines for the Prevention, Diagnosis, and Treatment of Acute Altitude Illness: 2024 Update. <a href="https://pubmed.ncbi.nlm.nih.gov/37833187/" target="_blank" rel="noopener">Wilderness &amp; Environmental Medicine. 2024;35(1 Suppl):2S–19S</a>.</li>
-    <li><em>Medical Memorandum No. 189 (2017), Problems of High Altitude</em> — staged acclimatization schedule and preventive measures used in this application's high-altitude section.</li>
-    <li>Open-Meteo. <a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener">Weather API documentation</a> and <a href="https://open-meteo.com/en/docs/elevation-api" target="_blank" rel="noopener">Elevation API / Copernicus DEM</a>.</li>
-  </ol>
-  <p class="bibliography-note">This decision aid provides preventive guidance and screening information. Weather warnings and medical decisions should be confirmed with the relevant official service or healthcare professional when required.</p>
-</section>
-
-<div class="source-note" style="margin-top: 15px; text-align: center; font-size: 14px; color: #555; font-style: italic;">
+<div aria-labelledby="advisoryTitle" aria-modal="true" class="modal-overlay hidden" id="advisoryModal" role="dialog">
+<div class="modal-box">
+<button aria-label="Close" class="modal-close" id="advisoryCloseBtn">×</button>
+<h2 id="advisoryTitle">Heat Safety Advice</h2>
+<div id="advisoryBody"></div>
+</div>
+</div>
+<div aria-labelledby="aqiModalTitle" aria-modal="true" class="modal-overlay hidden" id="aqiModal" role="dialog">
+<div class="modal-box">
+<button aria-label="Close" class="modal-close" id="aqiCloseBtn">×</button>
+<h2 id="aqiModalTitle">AQI Health Advisory</h2>
+<div id="aqiModalBody"></div>
+</div>
+</div>
+<div aria-labelledby="referencesModalTitle" aria-modal="true" class="modal-overlay hidden" id="referencesModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('referencesModal')">×</button><h2 id="referencesModalTitle">References &amp; calculation methods</h2><div class="info-content"><div class="zone-desc" id="zoneDesc" style="margin-top: 20px; font-size: 15px; text-align: center; color: #333;">
+<strong>Green = Safe    |    Yellow = Caution    |    Red = Danger</strong>
+</div><section class="methods"><h3>Heat Index / feels like</h3><p>Temperature is converted to °F: F = 1.8T + 32. Initial estimate: H = 0.5[F + 61 + 1.2(F − 68) + 0.094R], where R is relative humidity (%). If (H + F)/2 ≥80°F, the Rothfusz regression is used:</p><p><code>H = −42.379 + 2.04901523F + 10.14333127R − 0.22475541FR − 0.00683783F² − 0.05481717R² + 0.00122874F²R + 0.00085282FR² − 0.00000199F²R².</code></p><p>For R&lt;13% and F=80–112°F, subtract [(13−R)/4]√[(17−|F−95|)/17]. For R&gt;85% and F=80–87°F, add [(R−85)/10][(87−F)/5]. Convert back with (H−32)×5/9. This is a screening estimate, not a measured body temperature.</p><p><strong>Calculation basis:</strong> the displayed “feels like” temperature uses the US National Weather Service Rothfusz Heat Index regression (temperature + relative humidity). The green/yellow/red chart background retains this application's existing Safe/Caution/Danger boundary curves. The Safe→Caution boundary is T = 40.1247562 − 0.287219702RH + 0.00195590150RH² − 0.00000452294349RH³. The Caution→Danger boundary is T = min(42.5, 52.9675892 − 0.468153228RH + 0.00421088398RH² − 0.0000162471061RH³), with 42.5°C used below RH 29.137%. These boundary curves are local decision-aid equations in this application and are not official NWS alert thresholds. For occupational heat-stress control, NIOSH recommends WBGT for exposure limits; Heat Index is a screening alternative when WBGT is unavailable and does not account fully for workload, radiant heat or clothing/PPE.</p><p><strong>Calculation basis:</strong> Wind chill = 13.12 + 0.6215T − 11.37V<sup>0.16</sup> + 0.3965TV<sup>0.16</sup>, where T is °C and V is wind speed in km/h. In this app it is applied at or below 10°C and above 4.8 km/h, matching the NWS definition range. Low-to-Extreme risk bands and approximate frostbite times follow Environment Canada; the &gt;0°C “Minimal” band is an app display category.</p><h3>Indian AQI</h3><p>Each pollutant sub-index is calculated by linear interpolation between CPCB concentration breakpoints: I = I_low + (I_high − I_low) × (C − C_low)/(C_high − C_low). Overall AQI is the rounded maximum sub-index. At least three pollutants, including PM₂.₅ or PM₁₀, are required by this implementation; values above its tables are capped at 500.</p><p>Model estimates use 24-hour averages for PM₂.₅, PM₁₀, NO₂ and SO₂ (at least 18 hourly values), and 8-hour averages for O₃ and CO (at least six). CO is converted from µg/m³ to mg/m³. A configured CPCB service is preferred when a station within 25 km has a reading no older than three hours. Otherwise Open-Meteo modelled pollutants are used; the app estimates Indian AQI rather than displaying US AQI.</p><h3>UV, visibility, storms &amp; elevation</h3><p>Live location readings request hourly UV Index, visibility and CAPE from Open-Meteo, selecting the hour matching its current weather timestamp. UV is a model estimate, not an on-device measurement. Visibility is modelled distance in metres. WMO codes 95, 96 and 99 indicate thunderstorms; CAPE is an instability screening indicator, not an official warning. Elevation is terrain height, converted to feet with metres × 3.28084; it is not a GPS altitude measurement.</p><p>These extra parameters are not requested for selected historical/future times or manually entered weather values and may show unavailable. Automatic chart selection uses cold below 20°C; this switch is an app display choice, not a medical threshold. Missing wind uses air temperature without wind-chill correction; missing humidity prevents heat assessment.</p><h3>Storm and visibility display thresholds</h3><p>CAPE categories used here: &lt;1,000 J/kg weak; 1,000–&lt;2,500 moderate; 2,500–&lt;4,000 strong; ≥4,000 extreme instability. Visibility: &lt;1 km fog-range; 1–&lt;5 km reduced; ≥5 km good viewing distance. The 5 km division is an app display threshold. Surface pressure is requested from the live weather API in hPa; wind gusts are displayed separately from sustained wind and are not substituted into wind chill.</p><h3>Weather and air-quality data documentation</h3><p><a href="https://open-meteo.com/en/docs/air-quality-api" rel="noopener" target="_blank">Open-Meteo Air Quality API</a> · <a href="https://mausam.imd.gov.in/" rel="noopener" target="_blank">IMD official weather warnings</a></p></section><details class="env-basis" id="environmentBasis" open="">
+<summary>Summary strip basis &amp; references</summary>
+<p><strong>Altitude:</strong> terrain elevation from Open-Meteo/Copernicus DEM, displayed in metres and feet; ≥2,450 m (about 8,000 ft) is flagged because altitude illness can occur in unacclimatized people, while the preventive staged schedule below begins at 2,700 m (about 9,000 ft). <strong>UV:</strong> WHO categories (0–2 Low, 3–5 Moderate, 6–7 High, 8–10 Very high, 11+ Extreme). <strong>Storm:</strong> WMO thunderstorm weather codes are prioritised; otherwise CAPE is shown as a screening indicator of atmospheric instability, not as an official storm warning. <strong>Visibility:</strong> modelled viewing distance; &lt;1 km is flagged as fog-range visibility per WMO.</p>
+<p><a href="https://open-meteo.com/en/docs/elevation-api" rel="noopener" target="_blank">Open-Meteo elevation</a> · <a href="https://www.cdc.gov/yellow-book/hcp/environmental-hazards-risks/high-altitude-travel-and-altitude-illness.html" rel="noopener" target="_blank">CDC altitude illness</a> · <a href="https://www.who.int/docs/default-source/inaugural-who-partners-forum/the-uv-index-sun-protection-table-notes-on-supplied-clipart.pdf" rel="noopener" target="_blank">WHO UV Index</a> · <a href="https://www.weather.gov/ilx/swop-severetopics-CAPE" rel="noopener" target="_blank">NOAA/NWS CAPE</a> · <a href="https://cloudatlas.wmo.int/fog-as-seen-from-aircraft.html" rel="noopener" target="_blank">WMO fog definition</a>. For severe-weather decisions in India, confirm against <a href="https://mausam.imd.gov.in/" rel="noopener" target="_blank">IMD warnings</a>.</p>
+</details><div class="chart-reference-note" id="chartReferenceNote"></div><section class="bibliography" id="bibliography">
+<h2>Bibliography &amp; advisory references</h2>
+<ol>
+<li>US National Weather Service / Weather Prediction Center. <a href="https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml" rel="noopener" target="_blank">Heat Index Equation</a>.</li>
+<li>CDC/NIOSH. <a href="https://www.cdc.gov/niosh/heat-stress/communication-resources/app.html" rel="noopener" target="_blank">Heat Stress: Heat Index and WBGT guidance</a>.</li>
+<li>US Occupational Safety and Health Administration. <a href="https://www.osha.gov/heat-exposure/water-rest-shade" rel="noopener" target="_blank">Heat: Water, Rest, Shade</a>.</li>
+<li>US National Weather Service. <a href="https://www.weather.gov/safety/cold-wind-chill-chart" rel="noopener" target="_blank">Wind Chill Chart and calculation range</a>.</li>
+<li>Environment and Climate Change Canada. <a href="https://www.canada.ca/en/services/environment/weather/severeweather/wind-chill-index.html" rel="noopener" target="_blank">Wind Chill Index and risk bands</a>.</li>
+<li>US Occupational Safety and Health Administration. <a href="https://www.osha.gov/emergency-preparedness/guides/cold-stress" rel="noopener" target="_blank">Cold Stress Guide</a>.</li>
+<li>World Health Organization. <a href="https://www.who.int/publications/i/item/9789241550376" rel="noopener" target="_blank">WHO Housing and Health Guidelines</a> — indoor cold and the 18°C benchmark.</li>
+<li>World Health Organization. <a href="https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-(uv)-index" rel="noopener" target="_blank">Ultraviolet (UV) Index and sun protection</a>.</li>
+<li>World Meteorological Organization, International Cloud Atlas. <a href="https://cloudatlas.wmo.int/fog-as-seen-from-aircraft.html" rel="noopener" target="_blank">Fog definition and visibility below 1,000 m</a>.</li>
+<li>NOAA / National Weather Service. <a href="https://www.weather.gov/ilx/swop-severetopics-CAPE" rel="noopener" target="_blank">Convective Available Potential Energy (CAPE)</a> — instability screening context.</li>
+<li>Central Pollution Control Board, India. <a href="https://cpcb.nic.in/" rel="noopener" target="_blank">National Air Quality Index</a> — AQI categories and health statements.</li>
+<li>CDC Yellow Book 2026. <a href="https://www.cdc.gov/yellow-book/hcp/environmental-hazards-risks/high-altitude-travel-and-altitude-illness.html" rel="noopener" target="_blank">High-Altitude Travel and Altitude Illness</a>.</li>
+<li>Luks AM, et al. Wilderness Medical Society Clinical Practice Guidelines for the Prevention, Diagnosis, and Treatment of Acute Altitude Illness: 2024 Update. <a href="https://pubmed.ncbi.nlm.nih.gov/37833187/" rel="noopener" target="_blank">Wilderness &amp; Environmental Medicine. 2024;35(1 Suppl):2S–19S</a>.</li>
+<li><em>Medical Memorandum No. 189 (2017), Problems of High Altitude</em> — staged acclimatization schedule and preventive measures used in this application's high-altitude section.</li>
+<li>Open-Meteo. <a href="https://open-meteo.com/en/docs" rel="noopener" target="_blank">Weather API documentation</a> and <a href="https://open-meteo.com/en/docs/elevation-api" rel="noopener" target="_blank">Elevation API / Copernicus DEM</a>.</li>
+</ol>
+<p class="bibliography-note">This decision aid provides preventive guidance and screening information. Weather warnings and medical decisions should be confirmed with the relevant official service or healthcare professional when required.</p>
+</section><div class="source-note" style="margin-top: 15px; text-align: center; font-size: 14px; color: #555; font-style: italic;">
   Conceptualized and prepared by Saurabh Mahajan
+</div></div></div></div><div aria-labelledby="altitudeModalTitle" aria-modal="true" class="modal-overlay hidden" id="altitudeModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('altitudeModal')">×</button><h2 id="altitudeModalTitle">High-altitude preventive guidance</h2><div class="info-content"><details class="ha-prevention" id="highAltitudePrevention" open="">
+<summary>High-altitude preventive guidance</summary>
+<div class="ha-context" id="haContext">Use this section when planning ascent to or stay at higher elevations.</div>
+<h3>1. Gradual ascent</h3>
+<ul>
+<li>Do not go too high too fast. Above 2,700 m (about 9,000 ft), keep the gain in <strong>sleeping altitude</strong> to no more than about 500 m (1,650 ft) per day.</li>
+<li>Allow an additional rest/acclimatization day for every 1,000–1,500 m (3,300–4,900 ft) of ascent.</li>
+<li>Do not ascend further if symptoms compatible with acute mountain sickness develop. Resume ascent only after symptoms have completely resolved; descend if symptoms persist or worsen.</li>
+</ul>
+<h3>2. Staged acclimatization schedule</h3>
+<div class="ha-stage-grid">
+<div class="ha-stage"><strong>2,700–3,600 m<br/>(9,000–12,000 ft) · 6 days</strong><br/>Days 1–2: rest except short, easy level walks.<br/>Days 3–4: slow walk 1.5–3 km; avoid steep climbs.<br/>Days 5–6: walk up to 5 km and climb up to about 300 m at a slow pace.</div>
+<div class="ha-stage"><strong>&gt;3,600–4,500 m<br/>(12,000–15,000 ft) · 4 days</strong><br/>Days 1–2: slow walk 1.5–3 km; avoid steep climbs.<br/>Day 3: slow walk with climb up to about 300 m.<br/>Day 4: climb about 300 m at a slow pace without extra load.</div>
+<div class="ha-stage"><strong>&gt;4,500 m<br/>(&gt;15,000 ft) · 4 days</strong><br/>Use the same gradual activity progression as the preceding 4-day stage. Avoid rapid further ascent and excessive exertion.</div>
 </div>
-</div>
+<p class="ha-note">Acclimatization varies between individuals and continues beyond the staged period. After a prolonged stay at low altitude, re-acclimatization is required; after more than about 4 weeks away, repeat the full staged schedule.</p>
+<h3>3. Activity during early acclimatization</h3>
+<ul>
+<li>Keep activity light during the first 48 hours and increase exertion gradually.</li>
+<li>Avoid unusually strenuous exercise during the first week, even if you feel well.</li>
+<li>Physical fitness does not eliminate the risk of altitude illness.</li>
+</ul>
+<h3>4. Hydration, nutrition and substances</h3>
+<ul>
+<li>Maintain normal hydration; cold, dry air increases insensible fluid loss. Drink regularly, but do not force excessive fluids.</li>
+<li>Eat regular meals with adequate carbohydrate intake during ascent and acclimatization.</li>
+<li>Avoid alcohol during the first 48 hours at altitude and avoid sedative or respiratory-depressant medicines unless specifically prescribed.</li>
+</ul>
+<h3>5. Cold and UV protection</h3>
+<ul>
+<li>Use layered, dry clothing and wind protection; wind can markedly increase heat loss.</li>
+<li>Protect exposed skin, hands, feet, head and face as cold intensity increases.</li>
+<li>UV exposure increases with elevation. Use protective clothing, a broad-brimmed hat, UV-protective eyewear and broad-spectrum sunscreen; strengthen protection when the UV Index is 3 or above.</li>
+</ul>
+<h3>6. When to postpone ascent or descend</h3>
+<ul>
+<li>Postpone ascent during an acute illness, especially significant respiratory or gastrointestinal illness.</li>
+<li>Stop further ascent for new headache with nausea, dizziness, unusual fatigue or sleep disturbance after gaining altitude.</li>
+<li><strong>Descend and seek urgent medical help</strong> for confusion, loss of coordination, severe breathlessness at rest, rapidly worsening symptoms or marked reduction in exercise tolerance.</li>
+</ul>
+<h3>7. Preventive medication</h3>
+<p>Medication to prevent altitude illness may be appropriate when rapid ascent is unavoidable or in people with a prior history of altitude illness. It should be considered after medical assessment rather than self-started.</p>
+<p class="ha-note"><strong>Sources:</strong> staged schedule adapted from <em>Medical Memorandum No. 189 (2017), Problems of High Altitude</em>; general ascent and prevention principles cross-checked against CDC Yellow Book 2026 and Wilderness Medical Society 2024 guidance. See References &amp; methods.</p>
+</details></div></div></div><script>
+let latestDashboardReading = null;
+let latestDashboardLabel = '';
+function renderLiveDashboard(mode) {
+ const r = latestDashboardReading;
+ if (!r) return;
+ mode = mode || currentChartMode(lastHistory);
+ setStatus(latestDashboardLabel, false);
+ const finite = Number.isFinite;
+ const feel = !finite(r.temp_c) ? null : mode === 'cold' ? windChillC(r.temp_c, finite(r.wind_kmh) ? r.wind_kmh : 0) : finite(r.rh) ? feelsLikeC(r.temp_c,r.rh) : null;
+ const metrics = [['Temperature',r.temp_c,'°C'],['Feels like',feel,'°C'],['Humidity',r.rh,'%'],['Wind',r.wind_kmh,' km/h']];
+ const target = document.getElementById('liveMetrics'); target.replaceChildren();
+ for (const [label,value,unit] of metrics) {
+  const el=document.createElement('div'); el.className='metric';
+  const name=document.createElement('span');name.textContent=label;
+  const val=document.createElement('strong');val.textContent=finite(value)?value.toFixed(label==='Humidity'?0:1)+unit:'—';
+  el.append(name,val); target.append(el);
+ }
+ const chip=document.getElementById('stressValue');let band=null;let zone='Unavailable';
+ if(finite(r.temp_c)) {
+  if(mode==='cold'){band=COLD_BANDS[coldZoneIndex(feel)];zone=band.name;}
+  else if(finite(r.rh)){zone=heatZone(r.temp_c,r.rh);band=HEAT_ADVISORY[zone];}
+ }
+ chip.textContent=`${mode==='cold'?'Cold stress':'Heat stress'} · ${zone}`;
+ chip.style.background=band?.color || '#e2e8f0';chip.style.color=band?.textColor || '#334155';
+}
+let infoReturnFocus=null;
+function openInfoModal(id){infoReturnFocus=document.activeElement;const el=document.getElementById(id);el.classList.remove('hidden');document.body.style.overflow='hidden';el.querySelector('.modal-close').focus();}
+function closeInfoModal(id){document.getElementById(id).classList.add('hidden');document.body.style.overflow='';infoReturnFocus?.focus();}
+for(const id of ['referencesModal','altitudeModal']) document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)closeInfoModal(id);});
+document.addEventListener('keydown',e=>{
+ const active=document.querySelector('.modal-overlay:not(.hidden)');if(!active)return;
+ if(e.key==='Escape'){active.classList.add('hidden');document.body.style.overflow='';infoReturnFocus?.focus();}
+ if(e.key==='Tab'){const els=[...active.querySelectorAll('button,a,input,select,summary,[tabindex="0"]')].filter(x=>x.getClientRects().length);const first=els[0],last=els[els.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
+});
 
-<div class="modal-overlay hidden" id="advisoryModal" role="dialog" aria-modal="true" aria-labelledby="advisoryTitle">
-  <div class="modal-box">
-    <button class="modal-close" id="advisoryCloseBtn" aria-label="Close">&times;</button>
-    <h2 id="advisoryTitle">Heat Safety Advice</h2>
-    <div id="advisoryBody"></div>
-  </div>
-</div>
-
-<div class="modal-overlay hidden" id="aqiModal" role="dialog" aria-modal="true" aria-labelledby="aqiModalTitle">
-  <div class="modal-box">
-    <button class="modal-close" id="aqiCloseBtn" aria-label="Close">&times;</button>
-    <h2 id="aqiModalTitle">AQI Health Advisory</h2>
-    <div id="aqiModalBody"></div>
-  </div>
-</div>
-
-<script>
 // Optional service for official CPCB station AQI. Keep any credentials on the
 // server, never in this public page. Return one station or {stations:[...]}.
 // Each station: {aqi, station, lat, lon, observed_at} with an ISO 8601
@@ -935,7 +947,7 @@ function renderAQI(result, source = 'modelled', unavailableReason = '') {
     return;
   }
   const cat = categorizeAQI(result.aqi);
-  value.textContent = `${currentAQISource === 'modelled' ? 'Estimated ' : ''}AQI ${result.aqi}`;
+  value.textContent = `${currentAQISource === 'modelled' ? 'Estimated ' : ''}AQI ${result.aqi} · ${cat.name}`;
   value.style.background = cat.color;
   value.style.color = cat.textColor;
   value.title = currentAQISource === 'cpcb'
@@ -1084,12 +1096,8 @@ function openAdvisory() {
   html += `<h3>Watch for — Heat Exhaustion</h3><ul>${HEAT_WARNING_SIGNS.exhaustion.map(s => `<li>${s}</li>`).join('')}</ul>`;
   html += `<h3>Watch for — Heat Stroke (medical emergency)</h3><ul>${HEAT_WARNING_SIGNS.stroke.map(s => `<li>${s}</li>`).join('')}</ul>`;
   html += `<div class="advisory-emergency">Heat stroke is a medical emergency. Call your local emergency number immediately, move the person to a cooler place and cool them with water, wet cloths or ice packs while help arrives. Do not give drinks to someone who is confused or unconscious.</div>`;
-  html += `<div class="advisory-basis"><strong>Calculation basis:</strong> the displayed “feels like” temperature uses the US National Weather Service Rothfusz Heat Index regression (temperature + relative humidity). The green/yellow/red chart background retains this application's existing Safe/Caution/Danger boundary curves. The Safe→Caution boundary is T = 40.1247562 − 0.287219702RH + 0.00195590150RH² − 0.00000452294349RH³. The Caution→Danger boundary is T = min(42.5, 52.9675892 − 0.468153228RH + 0.00421088398RH² − 0.0000162471061RH³), with 42.5°C used below RH 29.137%. These boundary curves are local decision-aid equations in this application and are not official NWS alert thresholds. For occupational heat-stress control, NIOSH recommends WBGT for exposure limits; Heat Index is a screening alternative when WBGT is unavailable and does not account fully for workload, radiant heat or clothing/PPE.</div>`;
-  html += `<div class="advisory-references"><strong>Key references</strong><ul>` +
-    `<li><a href="https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml" target="_blank" rel="noopener">US National Weather Service / WPC — Heat Index Equation</a></li>` +
-    `<li><a href="https://www.cdc.gov/niosh/heat-stress/communication-resources/app.html" target="_blank" rel="noopener">NIOSH — Heat Index vs WBGT for workers</a></li>` +
-    `<li><a href="https://www.osha.gov/index.php/heat-exposure/water-rest-shade" target="_blank" rel="noopener">OSHA — Water, Rest, Shade</a></li>` +
-    `</ul></div>`;
+
+
 
   body.innerHTML = html;
   document.getElementById('advisoryModal').classList.remove('hidden');
@@ -1127,13 +1135,8 @@ function openColdAdvisory() {
   html += `<h3>Watch for — Frostbite</h3><ul>${COLD_WARNING_SIGNS.frostbite.map(x => `<li>${x}</li>`).join('')}</ul>`;
   html += `<div class="advisory-emergency">For suspected hypothermia, move the person to shelter, remove wet clothing, insulate and warm them gradually, give warm sweet drinks only if fully alert, and get medical help urgently. For frostbite, do not rub the skin or apply direct heat; protect the area and seek medical care.</div>`;
   html += `<p class="hint">The Low-to-Extreme bands follow the Environment Canada wind-chill scale; the >0°C “Minimal” band is an app display category. Freezing times are approximate for exposed skin. They do not account for wet clothing, workload, altitude or acclimatisation. Use alongside local cold-injury procedures and medical judgement.</p>`;
-  html += `<div class="advisory-basis"><strong>Calculation basis:</strong> Wind chill = 13.12 + 0.6215T − 11.37V<sup>0.16</sup> + 0.3965TV<sup>0.16</sup>, where T is °C and V is wind speed in km/h. In this app it is applied at or below 10°C and above 4.8 km/h, matching the NWS definition range. Low-to-Extreme risk bands and approximate frostbite times follow Environment Canada; the >0°C “Minimal” band is an app display category.</div>`;
-  html += `<div class="advisory-references"><strong>Key references</strong><ul>` +
-    `<li><a href="https://www.canada.ca/en/services/environment/weather/severeweather/wind-chill-index.html" target="_blank" rel="noopener">Environment and Climate Change Canada — Wind Chill Index &amp; risk bands</a></li>` +
-    `<li><a href="https://www.weather.gov/safety/cold-wind-chill-chart" target="_blank" rel="noopener">US National Weather Service — Wind chill calculation range</a></li>` +
-    `<li><a href="https://www.osha.gov/emergency-preparedness/guides/cold-stress" target="_blank" rel="noopener">OSHA — Cold Stress Guide (layering, warm fluids, first aid)</a></li>` +
-    `<li><a href="https://www.who.int/publications/i/item/9789241550376" target="_blank" rel="noopener">WHO Housing and Health Guidelines — indoor cold / 18°C benchmark</a></li>` +
-    `</ul></div>`;
+
+
 
   body.innerHTML = html;
   document.getElementById('advisoryModal').classList.remove('hidden');
@@ -1215,10 +1218,11 @@ function formatHM(dateObj) {
 
 // ================== UI helpers ==================
 function setStatus(text, isError) {
-  document.getElementById('statusText').textContent = text;
-  const bar = document.getElementById('statusBar');
-  bar.style.background = isError ? '#ffecec' : '#eef7ff';
-  bar.style.borderColor = isError ? '#ffb3b3' : '#bcdcff';
+  const detail=document.getElementById('requestDetail');
+  detail.textContent=isError || text.startsWith('No manual') ? text : '';
+  document.getElementById('statusText').textContent=isError ? 'Update failed · see data options' : text.startsWith('Fetching') ? 'Updating…' : text.startsWith('No manual') ? 'No weather values' : text === 'History for today cleared.' || text === 'History for today cleared.' ? 'History cleared' : text;
+  document.querySelector('.status-bar .dot').style.background=isError?'#c2413b':'#147d83';
+  if(isError || text.startsWith('No manual')){latestDashboardReading=null;document.getElementById('liveMetrics').replaceChildren();const chip=document.getElementById('stressValue');chip.textContent='Stress unavailable';chip.style.background='#e2e8f0';chip.style.color='#334155';}
 }
 
 function setEnvCard(prefix, value, note, level = 'neutral') {
@@ -1228,10 +1232,12 @@ function setEnvCard(prefix, value, note, level = 'neutral') {
 }
 
 function resetEnvironmentSummary(note = 'Not available for this reading') {
-  for (const key of ['Altitude', 'UV', 'Storm', 'Visibility']) setEnvCard(key, '—', note, 'neutral');
+  for (const key of ['Altitude', 'UV', 'Storm', 'Visibility', 'Gust', 'Pressure']) setEnvCard(key, '—', note, 'neutral');
 }
 
 function renderEnvironmentSummary(reading) {
+  setEnvCard('Gust', Number.isFinite(reading.gust_kmh) ? reading.gust_kmh.toFixed(1)+' km/h' : '—', 'Brief maximum wind speed');
+  setEnvCard('Pressure', Number.isFinite(reading.pressure_hpa) ? reading.pressure_hpa.toFixed(1)+' hPa' : '—', 'Unavailable when the source does not supply pressure');
   // Altitude: CDC uses a sleeping altitude of 2,450 m (8,000 ft) as a practical
   // threshold at which unacclimatized travellers can be at risk of altitude illness.
   if (Number.isFinite(reading.elevation_m)) {
@@ -1575,7 +1581,7 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
   // Live mode (unchanged from before) — exact current reading.
   if (!targetDate) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-      `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code` +
+      `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code,surface_pressure` +
       `&hourly=uv_index,visibility,cape&forecast_days=1&timezone=auto`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Open-Meteo request failed (' + res.status + ')');
@@ -1594,6 +1600,7 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
       gust_kmh: Number.isFinite(d.current.wind_gusts_10m) ? d.current.wind_gusts_10m : null,
       elevation_m: Number.isFinite(d.elevation) ? d.elevation : null,
       uv: hVal('uv_index'),
+      pressure_hpa: Number.isFinite(d.current.surface_pressure) ? d.current.surface_pressure : null,
       visibility_m: hVal('visibility'),
       cape_jkg: hVal('cape'),
       weather_code: Number.isFinite(d.current.weather_code) ? d.current.weather_code : null,
@@ -1747,29 +1754,10 @@ async function fetchAndPlot() {
     } else {
       prefix = source === 'manualdata' ? 'Recorded' : 'Live';
     }
-    const wind = reading.wind_kmh;
-    const gustText = Number.isFinite(reading.gust_kmh) ? `, gusting ${reading.gust_kmh.toFixed(0)} km/h` : '';
-    let statusMessage;
-    if (!Number.isFinite(reading.temp_c)) {
-      const pieces = [];
-      if (Number.isFinite(reading.rh)) pieces.push(`humidity ${reading.rh.toFixed(0)}%`);
-      if (Number.isFinite(wind)) pieces.push(`wind ${wind.toFixed(0)} km/h`);
-      statusMessage = `${prefix} — ${locationLabel}: ${pieces.join(', ') || 'partial weather values recorded'}. Temperature was not entered, so heat/cold stress cannot be calculated.`;
-    } else if (currentChartMode(history) === 'cold') {
-      const effectiveWind = Number.isFinite(wind) ? wind : 0;
-      const chill = windChillC(reading.temp_c, effectiveWind);
-      const windPhrase = Number.isFinite(wind) ? `with wind ${wind.toFixed(0)} km/h${gustText}` : 'with no wind speed entered';
-      const chillPhrase = Number.isFinite(wind) && chillApplies(reading.temp_c, wind)
-        ? `it feels like ${chill.toFixed(1)}°C with wind chill`
-        : 'air temperature is used without a wind-chill correction';
-      statusMessage = `${prefix} — ${locationLabel}: At ${reading.temp_c.toFixed(1)}°C ${windPhrase}, ${chillPhrase}. Cold stress zone: ${coldZone(reading.temp_c, effectiveWind)}.`;
-    } else if (Number.isFinite(reading.rh)) {
-      statusMessage = `${prefix} — ${locationLabel}: At ${reading.temp_c.toFixed(1)}°C and ${reading.rh.toFixed(0)}% relative humidity, it feels like ${feels_c.toFixed(1)}°C. Heat stress zone: ${heatZone(reading.temp_c, reading.rh)}.`;
-    } else {
-      statusMessage = `${prefix} — ${locationLabel}: Temperature ${reading.temp_c.toFixed(1)}°C recorded. Relative humidity was not entered, so the heat index and heat stress zone cannot be calculated. Humidity is not needed if you switch to the cold chart.`;
-    }
-    setStatus(statusMessage, false);
-    document.getElementById('lastUpdated').textContent = 'Last updated: ' + reading.time.toLocaleString();
+    latestDashboardReading = reading;
+    latestDashboardLabel = `${prefix} · ${locationLabel}`;
+    renderLiveDashboard();
+    document.getElementById('lastUpdated').textContent = reading.time.toLocaleString();
 
     // AQI is additional context — fetched separately so a failure here never
     // breaks or overwrites the main temperature/humidity result above.
@@ -1864,6 +1852,7 @@ function renderPlot(history) {
   const mode = currentChartMode(lastHistory);
   const cold = mode === 'cold';
   applyModeUI(mode);
+  renderLiveDashboard(mode);
   const traces = cold ? buildColdBackground() : buildBackground();
   const dateDisplay = document.getElementById('date-range');
 
