@@ -387,6 +387,8 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 @media(max-width:760px){.wrap{padding:12px}.app-header{align-items:flex-start}.app-header h1{font-size:20px}.app-header button{max-width:125px;height:auto;min-height:44px}.controls{grid-template-columns:1fr}.status-main{flex:0 0 auto}.live-metrics{gap:12px 20px}.metric strong{font-size:18px}.action-toolbar{display:grid;grid-template-columns:1fr 1fr}.action-toolbar button{width:100%}#plot{min-height:400px}.info-box{padding:22px 16px}}
 @media print{.app-header,.context-panel,.action-toolbar{display:none!important}}
 .env-summary{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:760px){.env-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.env-summary{grid-template-columns:1fr}}
+
+.freshness-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:#546e7a}.freshness-row span{border:1px solid #dae5e8;border-radius:6px;padding:4px 7px;background:#f7fafb}.exposure-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.exposure-grid label{font-size:12px;font-weight:650}.exposure-grid select{display:block;margin-top:6px}.timeline-grid{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px}.hour-card{flex:0 0 155px;padding:12px;border:1px solid #dbe5e8;border-radius:10px;background:#f7fafb}.hour-card h3{font-size:12px;margin:0 0 8px}.hour-card>strong{font-size:20px;display:block;margin:0 0 10px}.timeline-badge{display:block;padding:6px;margin:5px 0;border-radius:6px;font-size:11px;font-weight:650}.action-group{border-left:4px solid #75a5aa;padding:4px 14px;margin:12px 0;background:#f7fafb;border-radius:8px}.action-group[data-priority="3"],.action-group[data-priority="4"]{border-left-color:#ba3d35}.action-group h3{margin-top:8px}.action-group ul{padding-left:18px}@media(max-width:420px){.exposure-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -399,7 +401,7 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 <div class="status-main">
 <div class="live-metrics" id="liveMetrics"></div><div><span class="dot"></span><span id="statusText">Ready</span></div>
 <div class="status-aqi-row"><span aria-live="polite" class="status-aqi" id="stressValue">Stress —</span><span class="status-aqi-label">Air quality</span><span aria-live="polite" class="status-aqi" id="aqiValue">AQI —</span></div>
-</div>
+<div class="freshness-row"><span id="sourceFreshness">Weather unavailable</span><span id="aqiFreshness">AQI unavailable</span></div></div>
 <div id="lastUpdated">—</div>
 </div>
 <details class="context-panel" id="meteorologyDetails"><summary>Altitude &amp; meteorological details</summary><div aria-label="Environmental summary" class="env-summary" id="environmentSummary">
@@ -410,7 +412,7 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 <div class="env-label">UV Index</div><div class="env-value" id="envUVValue">—</div><div class="env-note" id="envUVNote">Waiting for weather data</div>
 </div>
 <div class="env-card" data-level="neutral" id="envStormCard">
-<div class="env-label">Storm / instability</div><div class="env-value" id="envStormValue">—</div><div class="env-note" id="envStormNote">Waiting for weather data</div>
+<div class="env-label">Thunderstorm / atmospheric instability</div><div class="env-value" id="envStormValue">—</div><div class="env-note" id="envStormNote">Waiting for weather data</div>
 </div>
 <div class="env-card" data-level="neutral" id="envVisibilityCard">
 <div class="env-label">Visibility</div><div class="env-value" id="envVisibilityValue">—</div><div class="env-note" id="envVisibilityNote">Waiting for weather data</div>
@@ -472,7 +474,11 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 </div>
 <button class="secondary" onclick="window.print()">Print / Save PDF</button>
 <button class="tertiary" onclick="clearHistory()">Clear Today's Points</button>
-</div><p class="hint" id="requestDetail" role="status"></p></details><div class="action-toolbar"><button class="primary" onclick="fetchAndPlot()">Refresh Now</button><button class="quaternary" id="adviceButton" onclick="openAdvisory()">Heat Safety Advice</button><button class="quaternary" disabled="" id="aqiAdviceButton" onclick="openAQIAdvisory()" type="button">AQI Health Advisory</button><button class="secondary" onclick="openInfoModal('altitudeModal')">High-altitude guidance</button></div>
+</div><p class="hint" id="requestDetail" role="status"></p></details><div class="action-toolbar"><button class="primary" onclick="fetchAndPlot()">Refresh Now</button><button class="primary" onclick="openRecommendedActions()">Recommended actions</button></div><details class="context-panel"><summary>Detailed health guidance</summary><div class="action-toolbar"><button class="quaternary" id="adviceButton" onclick="openAdvisory()">Heat Safety Advice</button><button class="quaternary" disabled="" id="aqiAdviceButton" onclick="openAQIAdvisory()" type="button">AQI Health Advisory</button><button class="secondary" onclick="openInfoModal('altitudeModal')">High-altitude guidance</button></div></details><details class="context-panel" id="exposurePanel"><summary>Exposure &amp; clothing options · optional</summary><p class="hint">Choose what applies to your outdoor activity. Your selections tailor the Recommended actions popup.</p><div class="exposure-grid">
+<label>Duration<select id="exposureDuration" onchange="saveExposure()"><option value="">Not specified</option><option value="short">Less than 1 hour</option><option value="long">1 hour or longer</option></select></label>
+<label>Activity<select id="exposureActivity" onchange="saveExposure()"><option value="">Not specified</option><option value="rest">Resting / standing</option><option value="light">Light activity</option><option value="heavy">Strenuous activity</option></select></label>
+<label>Sun exposure<select id="exposureSun" onchange="saveExposure()"><option value="">Not specified</option><option value="shade">Mostly shade</option><option value="sun">Direct sun</option></select></label>
+<label>Clothing / conditions<select id="exposureWet" onchange="saveExposure()"><option value="">Not specified</option><option value="dry">Dry</option><option value="wet">Wet clothing / rain / snow</option></select></label></div><div class="action-toolbar"><button class="secondary" onclick="openRecommendedActions()">View tailored guidance</button><button class="secondary" onclick="resetExposure()">Reset options</button></div></details>
 <div class="chart-mode-bar">
 <label for="chartMode">Chart view</label>
 <select id="chartMode" onchange="onChartModeChange()">
@@ -482,8 +488,7 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 </select>
 <span class="chart-mode-note" id="chartModeNote"></span>
 </div>
-<div id="plot"></div>
-
+<div id="plot"></div><details class="context-panel" id="timelinePanel"><summary>Hourly risk timeline · next 12 hours</summary><p class="hint" id="timelineStatus">Choose a live location to view the next 12 hours.</p><div class="timeline-grid" id="timelineGrid"></div><p class="hint">Categories describe separate hazards; forecasts are not a guarantee of safe outdoor conditions. Manual and selected historical/future readings do not populate this timeline.</p></details>
 </div>
 <div aria-labelledby="advisoryTitle" aria-modal="true" class="modal-overlay hidden" id="advisoryModal" role="dialog">
 <div class="modal-box">
@@ -527,7 +532,7 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 <p class="bibliography-note">This decision aid provides preventive guidance and screening information. Weather warnings and medical decisions should be confirmed with the relevant official service or healthcare professional when required.</p>
 </section><div class="source-note" style="margin-top: 15px; text-align: center; font-size: 14px; color: #555; font-style: italic;">
   Conceptualized and prepared by Saurabh Mahajan
-</div></div></div></div><div aria-labelledby="altitudeModalTitle" aria-modal="true" class="modal-overlay hidden" id="altitudeModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('altitudeModal')">×</button><h2 id="altitudeModalTitle">High-altitude preventive guidance</h2><div class="info-content"><details class="ha-prevention" id="highAltitudePrevention" open="">
+</div><section><h3>Actions, exposure settings &amp; forecast timeline</h3><p>The next 12 forecast hours use Open-Meteo temperature, humidity, sustained wind and UV data. Thermal categories use the same equations as the chart; automatic mode switches below 20°C. The AQI forecast applies the existing Indian AQI interpolation and rolling averages to hourly model pollutant forecasts; unavailable pollutants remain unavailable. Weather and AQI are separate model estimates.</p><p>Weather age uses the provider timestamp; retrieval time is shown in the source-label tooltip. Live weather older than 90 minutes is labelled stale as an app display rule. A forecast validity time is not its model-run issue time. Manual values are labelled with entry time and are not verified measurements.</p><p>Recommended actions use the displayed conditions; thunderstorm indications are listed first, followed by higher-category hazards. This ordering is a presentation choice, not a validated combined risk score. Exposure selections change advice only, without applying numerical adjustments. Clothing suggestions are general layering guidance; garment insulation, wetness, workload and individual factors prevent an exact clothing count or safe duration being inferred from air temperature.</p><p><a href="https://www.osha.gov/winter-weather/cold-stress" rel="noopener" target="_blank">OSHA: winter weather and cold stress</a> · <a href="https://www.weather.gov/safety/lightning-tips" rel="noopener" target="_blank">NWS: lightning safety</a> · <a href="https://www.osha.gov/heat-exposure/water-rest-shade" rel="noopener" target="_blank">OSHA: water, rest and shade</a></p></section></div></div></div><div aria-labelledby="altitudeModalTitle" aria-modal="true" class="modal-overlay hidden" id="altitudeModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('altitudeModal')">×</button><h2 id="altitudeModalTitle">High-altitude preventive guidance</h2><div class="info-content"><details class="ha-prevention" id="highAltitudePrevention" open="">
 <summary>High-altitude preventive guidance</summary>
 <div class="ha-context" id="haContext">Use this section when planning ascent to or stay at higher elevations.</div>
 <h3>1. Gradual ascent</h3>
@@ -570,7 +575,101 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 <h3>7. Preventive medication</h3>
 <p>Medication to prevent altitude illness may be appropriate when rapid ascent is unavoidable or in people with a prior history of altitude illness. It should be considered after medical assessment rather than self-started.</p>
 <p class="ha-note"><strong>Sources:</strong> staged schedule adapted from <em>Medical Memorandum No. 189 (2017), Problems of High Altitude</em>; general ascent and prevention principles cross-checked against CDC Yellow Book 2026 and Wilderness Medical Society 2024 guidance. See References &amp; methods.</p>
-</details></div></div></div><script>
+</details></div></div></div><div aria-labelledby="actionsTitle" aria-modal="true" class="modal-overlay hidden" id="actionsModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('actionsModal')">×</button><h2 id="actionsTitle">Recommended actions</h2><div id="recommendedActionsBody"></div></div></div><script>
+// Optional exposure preferences and planning view.
+let hourlyOutlook = [];
+let hourlyAQI = [];
+let outlookZone = '';
+let weatherContext = null;
+let weatherRequestId = 0;
+const EXPOSURE_IDS = ['exposureDuration','exposureActivity','exposureSun','exposureWet'];
+function exposureValues(){return Object.fromEntries(EXPOSURE_IDS.map(id=>[id,document.getElementById(id).value]));}
+function saveExposure(){try{localStorage.setItem('environmentExposureV1',JSON.stringify(exposureValues()));}catch(_){}renderActionContent();}
+function restoreExposure(){try{const saved=JSON.parse(localStorage.getItem('environmentExposureV1')||'{}');for(const id of EXPOSURE_IDS){const el=document.getElementById(id);if([...el.options].some(o=>o.value===saved[id]))el.value=saved[id];}}catch(_){} }
+function resetExposure(){for(const id of EXPOSURE_IDS)document.getElementById(id).value='';saveExposure();}
+function ageLabel(date){const minutes=Math.max(0,Math.floor((Date.now()-new Date(date).getTime())/60000));return minutes<1?'just now':minutes<60?`${minutes} min ago`:`${Math.floor(minutes/60)} h ${minutes%60} min ago`;}
+function updateFreshness(){
+ const el=document.getElementById('sourceFreshness');
+ if(!weatherContext){el.textContent='Weather unavailable';el.title='';}
+ const c=weatherContext;
+ if(c){
+ if(c.kind==='manual')el.textContent=`Manual · entered ${ageLabel(c.fetched)}`;
+ else if(c.kind!=='live')el.textContent=`Modelled · ${c.kind} · ${c.time.toLocaleString()}`;
+ else{const old=Date.now()-c.time.getTime()>90*60000;el.textContent=`Modelled · ${old?'STALE · ':''}valid ${ageLabel(c.time)}`;}
+ el.title=`Source: ${c.kind==='manual'?'User entry':'Open-Meteo'}\nReading: ${c.time.toLocaleString()}\nRetrieved/entered: ${c.fetched.toLocaleString()}`;
+ }
+ const aq=document.getElementById('aqiFreshness');
+ aq.textContent=!currentAQI?'AQI unavailable':currentAQISource==='manual'?'AQI · manual':`${currentAQISource==='cpcb'?'AQI · station':'AQI · modelled'} · ${currentAQI.time?ageLabel(currentAQI.time):'time unavailable'}`;
+}
+function thermalBand(r, choice='auto'){
+ if(!Number.isFinite(r.temp_c))return null;
+ const mode=choice==='auto'?(r.temp_c<AUTO_COLD_BELOW_C?'cold':'heat'):choice;
+ if(mode==='cold'){const feel=windChillC(r.temp_c,Number.isFinite(r.wind_kmh)?r.wind_kmh:0);const i=coldZoneIndex(feel);return {...COLD_BANDS[i],mode,feel,priority:i>=3?3:i>=1?2:1};}
+ if(!Number.isFinite(r.rh))return null;
+ const name=heatZone(r.temp_c,r.rh);return {...HEAT_ADVISORY[name],name,mode,feel:feelsLikeC(r.temp_c,r.rh),priority:name==='Danger'?3:name==='Caution'?2:1};
+}
+function actionGroups(r,aq,e){
+ const groups=[];const add=(title,priority,items)=>groups.push({title,priority,items});
+ if(r){
+  const b=thermalBand(r);if(b)add(`${b.mode==='cold'?'Cold':'Heat'} · ${b.name}`,b.priority,b.actions.slice(0,3));
+  else add('Incomplete weather reading',2,['Enter a temperature; heat assessment also needs relative humidity. Missing values do not indicate low risk.']);
+  if([95,96,99].includes(r.weather_code))add('Thunderstorm indicated',4,['Move outdoor activities to a substantial building or enclosed hard-topped vehicle. If you hear thunder, take shelter immediately and wait at least 30 minutes after the last thunder before returning outside.']);
+  if(Number.isFinite(r.uv)&&r.uv>=3)add(`UV · ${r.uv.toFixed(1)}`,r.uv>=8?3:2,['Use shade, covering clothing, a broad-brimmed hat, UV-protective eyewear and sunscreen.']);
+  if(Number.isFinite(r.visibility_m)&&r.visibility_m<1000)add('Low visibility',3,['Reassess travel and outdoor activity; follow local transport and weather advisories.']);
+  if(Number.isFinite(r.temp_c)&&r.temp_c<20){
+   const chill=windChillC(r.temp_c,Number.isFinite(r.wind_kmh)?r.wind_kmh:0);
+   const clothing=['Use an adjustable moisture-managing base, insulating middle and wind-resistant outer layer as needed. Keep clothing loose enough to preserve insulation.'];
+   if(chill<=0)clothing.push('Add a warm hat, gloves and insulated footwear; keep socks dry.');
+   if(chill<=-10)clothing.push('Strengthen insulation and cover the face and extremities; plan access to warm, dry shelter.');
+   if(chill<=-28)clothing.push('Exposed skin is at frostbite risk. Reduce exposure and follow the cold advisory; clothing does not guarantee protection.');
+   if(e.exposureWet==='wet')clothing.unshift('Change wet clothing promptly and seek dry shelter. Carry spare dry socks and gloves.');
+   if(e.exposureActivity==='heavy')clothing.push('Vent or remove insulation before sweating heavily, then replace layers during rests.');
+   if(e.exposureActivity==='rest'||e.exposureDuration==='long')clothing.push('Plan extra insulation during inactivity and regular warm-up breaks; carry a spare dry layer.');
+   add('Clothing & warm-up plan',chill<=-28?3:2,clothing);
+  }else if(Number.isFinite(r.temp_c)){
+   const items=['Use lightweight, breathable clothing where practical. Required protective equipment may increase heat strain.'];
+   if(e.exposureActivity==='heavy'||e.exposureDuration==='long')items.push('Reduce sustained exertion and arrange more frequent rest in a cool area with drinking water available.');
+   if(e.exposureSun==='sun')items.push('Move activity into shade where possible; direct sun can increase heat strain beyond the displayed index.');
+   add('Exposure & clothing',1,items);
+  }
+ }
+ if(aq){const c=categorizeAQI(aq.aqi);add(`Air quality · ${c.name}`,aq.aqi>200?3:aq.aqi>100?2:1,[c.general,`Children, older adults and people with heart or lung conditions: ${c.vulnerable}`]);}
+ if(!r&&!aq)add('No current assessment',2,['Choose a location and refresh, or enter the weather/AQI values available.']);
+ if(!aq&&r)add('Air-quality data unavailable',1,['Air-quality advice will appear when a usable AQI reading is available.']);
+ return groups.sort((a,b)=>b.priority-a.priority);
+}
+function renderActionContent(){
+ const body=document.getElementById('recommendedActionsBody');body.replaceChildren();
+ const note=document.createElement('p');note.className='hint';note.textContent=weatherContext&&weatherContext.kind!=='live'? 'Advice for the displayed reading. Manual and selected-time data may not describe current conditions.' : 'Actions for the latest displayed weather and AQI. Unknown conditions are not treated as low risk.';body.append(note);
+ if(weatherContext?.kind==='live'&&Date.now()-weatherContext.time.getTime()>90*60000){const warning=document.createElement('p');warning.className='advisory-emergency';warning.textContent='Weather reading is more than 90 minutes old. Refresh before planning activity.';body.append(warning);}
+ for(const g of actionGroups(latestDashboardReading,currentAQI,exposureValues())){const card=document.createElement('section');card.className='action-group';card.dataset.priority=g.priority;const h=document.createElement('h3');h.textContent=g.title;const ul=document.createElement('ul');for(const t of [...new Set(g.items)]){const li=document.createElement('li');li.textContent=t;ul.append(li);}card.append(h,ul);body.append(card);}
+ const foot=document.createElement('p');foot.className='hint';foot.textContent='Exposure choices tailor advice only. They do not change Heat Index, wind chill or AQI, and do not establish a safe exposure time or exact clothing requirement.';body.append(foot);
+}
+function openRecommendedActions(){renderActionContent();openInfoModal('actionsModal');}
+function resetOutlook(message='Choose a live location to view the next 12 hours.') {hourlyOutlook=[];hourlyAQI=[];document.getElementById('timelineStatus').textContent=message;document.getElementById('timelineGrid').replaceChildren();}
+function outlookFromWeather(d){
+ const h=d.hourly||{};const current=Date.parse(d.current.time+'Z')-Number(d.utc_offset_seconds||0)*1000;
+ return (h.time||[]).map((local,i)=>{const time=Date.parse(local+'Z')-Number(d.utc_offset_seconds||0)*1000;const val=k=>Number.isFinite(h[k]?.[i])?h[k][i]:null;return {time,temp_c:val('temperature_2m'),rh:val('relative_humidity_2m'),wind_kmh:val('wind_speed_10m'),uv:val('uv_index')};}).filter(r=>r.time>=current).slice(0,12);
+}
+function renderTimeline(){
+ const grid=document.getElementById('timelineGrid');grid.replaceChildren();if(!hourlyOutlook.length)return;
+ document.getElementById('timelineStatus').textContent=`Next ${hourlyOutlook.length} hours · model forecast · ${outlookZone||'local time'} · air quality is an estimated Indian AQI`;
+ for(const r of hourlyOutlook){
+  const card=document.createElement('article');card.className='hour-card';const h=document.createElement('h3');h.textContent=new Date(r.time).toLocaleString([], {timeZone:outlookZone||undefined,weekday:'short',hour:'2-digit',minute:'2-digit'});card.append(h);
+  const temp=document.createElement('strong');temp.textContent=Number.isFinite(r.temp_c)?r.temp_c.toFixed(1)+'°C':'—';card.append(temp);
+  const b=thermalBand(r,document.getElementById('chartMode').value||'auto');
+  function badge(text,color='#e2e8f0',fg='#334155'){const el=document.createElement('span');el.className='timeline-badge';el.textContent=text;el.style.background=color;el.style.color=fg;card.append(el);}
+  if(b)badge(`${b.mode==='cold'?'Cold':'Heat'} · ${b.name}`,b.color,b.textColor);else badge('Stress unavailable');
+  const uv=r.uv;if(Number.isFinite(uv)){const label=uv<3?'Low':uv<6?'Moderate':uv<8?'High':uv<11?'Very high':'Extreme';badge(`UV ${uv.toFixed(1)} · ${label}`);}else badge('UV unavailable');
+  const a=hourlyAQI.find(x=>Math.abs(x.time-r.time)<1800000);if(a&&Number.isFinite(a.aqi)){const c=categorizeAQI(a.aqi);badge(`AQI ${a.aqi} · ${c.name}`,c.color,c.textColor);}else badge('AQI unavailable');
+  grid.append(card);
+ }
+}
+function aqiAtHour(h,end){
+ const p={pm25:roundedAverage(h.pm2_5||[],end,24,18),pm10:roundedAverage(h.pm10||[],end,24,18),no2:roundedAverage(h.nitrogen_dioxide||[],end,24,18),so2:roundedAverage(h.sulphur_dioxide||[],end,24,18),o3:roundedAverage(h.ozone||[],end,8,6),co:roundedAverage(h.carbon_monoxide||[],end,8,6,1/100)};
+ if(p.co!==null)p.co/=1000;for(const k of Object.keys(p))if(!Number.isFinite(p[k]))p[k]=null;return computeIndianAQI(p);
+}
+
 let latestDashboardReading = null;
 let latestDashboardLabel = '';
 function renderLiveDashboard(mode) {
@@ -599,7 +698,7 @@ function renderLiveDashboard(mode) {
 let infoReturnFocus=null;
 function openInfoModal(id){infoReturnFocus=document.activeElement;const el=document.getElementById(id);el.classList.remove('hidden');document.body.style.overflow='hidden';el.querySelector('.modal-close').focus();}
 function closeInfoModal(id){document.getElementById(id).classList.add('hidden');document.body.style.overflow='';infoReturnFocus?.focus();}
-for(const id of ['referencesModal','altitudeModal']) document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)closeInfoModal(id);});
+for(const id of ['referencesModal','altitudeModal','actionsModal']) document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)closeInfoModal(id);});
 document.addEventListener('keydown',e=>{
  const active=document.querySelector('.modal-overlay:not(.hidden)');if(!active)return;
  if(e.key==='Escape'){active.classList.add('hidden');document.body.style.overflow='';infoReturnFocus?.focus();}
@@ -896,33 +995,24 @@ function roundedAverage(values, end, hours, minimum, factor = 1) {
 
 async function fetchModelledAQI(lat, lon) {
   const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}` +
-              `&hourly=pm10,pm2_5,nitrogen_dioxide,sulphur_dioxide,ozone,carbon_monoxide&past_days=2&forecast_days=1&timezone=UTC`;
+              `&hourly=pm10,pm2_5,nitrogen_dioxide,sulphur_dioxide,ozone,carbon_monoxide&past_days=2&forecast_days=2&timezone=auto`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('Air quality request failed (' + res.status + ')');
   const d = await res.json();
   if (!d.hourly || !Array.isArray(d.hourly.time)) throw new Error('No hourly air quality data returned.');
   const now = Date.now();
+  const timestampOf=t=>Date.parse(t+'Z')-Number(d.utc_offset_seconds||0)*1000;
   const end = d.hourly.time.reduce((best, time, i) => {
-    const timestamp = Date.parse(time + 'Z');
-    return Number.isFinite(timestamp) && timestamp <= now && timestamp > (best < 0 ? -Infinity : Date.parse(d.hourly.time[best] + 'Z')) ? i : best;
+    const timestamp = timestampOf(time);
+    return Number.isFinite(timestamp) && timestamp <= now && timestamp > (best < 0 ? -Infinity : timestampOf(d.hourly.time[best])) ? i : best;
   }, -1);
   if (end < 0) return null;
-  const time = new Date(d.hourly.time[end] + 'Z');
+  const time = new Date(timestampOf(d.hourly.time[end]));
   if (now - time.getTime() > 6 * 3600000) return null;
   const h = d.hourly;
-  const pollutants = {
-    pm25: roundedAverage(h.pm2_5 || [], end, 24, 18),
-    pm10: roundedAverage(h.pm10 || [], end, 24, 18),
-    no2: roundedAverage(h.nitrogen_dioxide || [], end, 24, 18),
-    so2: roundedAverage(h.sulphur_dioxide || [], end, 24, 18),
-    o3: roundedAverage(h.ozone || [], end, 8, 6),
-    // Open-Meteo CO is in µg/m³; CPCB breakpoints are in mg/m³.
-    co: roundedAverage(h.carbon_monoxide || [], end, 8, 6, 1 / 100)
-  };
-  if (pollutants.co !== null) pollutants.co /= 1000;
-  for (const key of Object.keys(pollutants)) if (!Number.isFinite(pollutants[key])) pollutants[key] = null;
-  const result = computeIndianAQI(pollutants);
-  return result ? { ...result, source: 'modelled', time } : null;
+  const result = aqiAtHour(h,end);
+  const outlook = h.time.map((t,i)=>({time:timestampOf(t),...aqiAtHour(h,i)})).filter(x=>x.time>=time.getTime()).slice(0,13);
+  return result ? { ...result, source: 'modelled', time, outlook } : null;
 }
 
 async function fetchAQI(lat, lon) {
@@ -944,6 +1034,7 @@ function renderAQI(result, source = 'modelled', unavailableReason = '') {
     value.style.background = '#e2e8f0';
     value.style.color = '#334155';
     adviceButton.disabled = true;
+    updateFreshness();
     return;
   }
   const cat = categorizeAQI(result.aqi);
@@ -956,6 +1047,7 @@ function renderAQI(result, source = 'modelled', unavailableReason = '') {
       ? 'Entered manually · not verified by this page'
       : `Open-Meteo model · ${result.time.toLocaleString()} · approximate Indian AQI from rolling pollutant averages`;
   adviceButton.disabled = false;
+  updateFreshness();
 }
 
 let currentAQI = null;
@@ -975,7 +1067,7 @@ document.getElementById('aqiManualForm').addEventListener('submit', e => {
   }
   error.textContent = '';
   aqiSelectionVersion += 1;
-  renderAQI({ aqi }, 'manual');
+  renderAQI({ aqi, time: new Date() }, 'manual');
   openAQIAdvisory();
 });
 
@@ -1220,7 +1312,7 @@ function formatHM(dateObj) {
 function setStatus(text, isError) {
   const detail=document.getElementById('requestDetail');
   detail.textContent=isError || text.startsWith('No manual') ? text : '';
-  document.getElementById('statusText').textContent=isError ? 'Update failed · see data options' : text.startsWith('Fetching') ? 'Updating…' : text.startsWith('No manual') ? 'No weather values' : text === 'History for today cleared.' || text === 'History for today cleared.' ? 'History cleared' : text;
+  document.getElementById('statusText').textContent=isError ? 'Update failed · see data options' : text.startsWith('Fetching') ? 'Updating…' : text.startsWith('No manual') ? 'No weather values' : text === 'History for today cleared.' ? 'History cleared' : text;
   document.querySelector('.status-bar .dot').style.background=isError?'#c2413b':'#147d83';
   if(isError || text.startsWith('No manual')){latestDashboardReading=null;document.getElementById('liveMetrics').replaceChildren();const chip=document.getElementById('stressValue');chip.textContent='Stress unavailable';chip.style.background='#e2e8f0';chip.style.color='#334155';}
 }
@@ -1266,10 +1358,10 @@ function renderEnvironmentSummary(reading) {
   if (Number.isFinite(reading.uv)) {
     const uv = Math.max(0, reading.uv);
     let label, level;
-    if (uv <= 2) { label = 'Low'; level = 'ok'; }
-    else if (uv <= 5) { label = 'Moderate'; level = 'watch'; }
-    else if (uv <= 7) { label = 'High'; level = 'watch'; }
-    else if (uv <= 10) { label = 'Very high'; level = 'alert'; }
+    if (uv < 3) { label = 'Low'; level = 'ok'; }
+    else if (uv < 6) { label = 'Moderate'; level = 'watch'; }
+    else if (uv < 8) { label = 'High'; level = 'watch'; }
+    else if (uv < 11) { label = 'Very high'; level = 'alert'; }
     else { label = 'Extreme'; level = 'extreme'; }
     setEnvCard('UV', `${uv.toFixed(1)} · ${label}`, uv >= 3 ? 'Sun protection recommended' : 'Low UV exposure category', level);
   } else {
@@ -1582,7 +1674,7 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
   if (!targetDate) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
       `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code,surface_pressure` +
-      `&hourly=uv_index,visibility,cape&forecast_days=1&timezone=auto`;
+      `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,uv_index,visibility,cape&forecast_days=2&timezone=auto`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Open-Meteo request failed (' + res.status + ')');
     const d = await res.json();
@@ -1604,7 +1696,9 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
       visibility_m: hVal('visibility'),
       cape_jkg: hVal('cape'),
       weather_code: Number.isFinite(d.current.weather_code) ? d.current.weather_code : null,
-      time: new Date()
+      time: new Date(Date.parse(d.current.time+'Z') - Number(d.utc_offset_seconds||0)*1000),
+      outlook: outlookFromWeather(d),
+      timezone: d.timezone
     };
   }
 
@@ -1662,6 +1756,14 @@ async function fetchAndPlot() {
     return;
   }
   const aqiRequestVersion = ++aqiSelectionVersion;
+  const requestId = ++weatherRequestId;
+  resetOutlook('Loading location forecast…');
+  weatherContext=null;latestDashboardReading=null;
+  document.getElementById('liveMetrics').replaceChildren();
+  document.getElementById('stressValue').textContent='Stress · updating';
+  document.getElementById('stressValue').style.background='#e2e8f0';
+  document.getElementById('stressValue').style.color='#334155';
+  renderAQI(null);updateFreshness();
 
   let targetDateTime;
   try {
@@ -1718,6 +1820,7 @@ async function fetchAndPlot() {
       if (temp === null && rh === null && wind === null) {
         setStatus('No manual weather values entered. Add any available value; a temperature is needed to calculate heat or cold stress.', false);
         resetEnvironmentSummary('Not available for manual weather values');
+        resetOutlook('Hourly planning requires a live location.');
         renderAQI(null);
         return;
       }
@@ -1727,7 +1830,13 @@ async function fetchAndPlot() {
       throw new Error('Select a valid data source.');
     }
 
+    if(requestId!==weatherRequestId)return;
     renderEnvironmentSummary(reading);
+    weatherContext={kind:source==='manualdata'?'manual':isHistorical?(targetDateTime.getTime()>Date.now()?'forecast':'historical'):'live',time:reading.time,fetched:new Date()};
+    hourlyOutlook=reading.outlook||[];outlookZone=reading.timezone||'';
+    if(!hourlyOutlook.length)resetOutlook('Hourly planning is available for live location readings only.');
+    else renderTimeline();
+    updateFreshness();
 
     const history = loadHistory();
     const hasTemp = Number.isFinite(reading.temp_c);
@@ -1758,6 +1867,7 @@ async function fetchAndPlot() {
     latestDashboardLabel = `${prefix} · ${locationLabel}`;
     renderLiveDashboard();
     document.getElementById('lastUpdated').textContent = reading.time.toLocaleString();
+    renderActionContent();
 
     // AQI is additional context — fetched separately so a failure here never
     // breaks or overwrites the main temperature/humidity result above.
@@ -1772,7 +1882,7 @@ async function fetchAndPlot() {
       }
       try {
         const aqiResult = await fetchAQI(aqiCoords.lat, aqiCoords.lon);
-        if (aqiRequestVersion === aqiSelectionVersion) renderAQI(aqiResult);
+        if (aqiRequestVersion === aqiSelectionVersion && requestId===weatherRequestId) {renderAQI(aqiResult);hourlyAQI=aqiResult?.outlook||[];renderTimeline();renderActionContent();}
       } catch (e) {
         if (aqiRequestVersion === aqiSelectionVersion) renderAQI(null);
       }
@@ -1781,6 +1891,8 @@ async function fetchAndPlot() {
     }
 
   } catch (err) {
+    if(requestId!==weatherRequestId)return;
+    weatherContext=null;updateFreshness();resetOutlook('Forecast unavailable. Check the data options and refresh.');
     setStatus('Error: ' + err.message, true);
     if (aqiRequestVersion === aqiSelectionVersion) {
       renderAQI(null, 'modelled', noAQIRecord);
@@ -1799,6 +1911,7 @@ let lastHistory = [];
 function onChartModeChange() {
   updateManualDataHint();
   renderPlot(lastHistory);
+  renderTimeline();
 }
 
 // Cold chart background: wind speed (x) against air temperature (y), shaded by the
@@ -1995,6 +2108,8 @@ window.addEventListener('resize', () => {
 });
 
 // ================== Init ==================
+restoreExposure();
+setInterval(updateFreshness,60000);
 (function initHistoricalDefaults() {
   const now = new Date();
   document.getElementById('histDate').value = isoDateStr(now);
