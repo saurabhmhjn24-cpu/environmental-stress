@@ -388,7 +388,8 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 @media print{.app-header,.context-panel,.action-toolbar{display:none!important}}
 .env-summary{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:760px){.env-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.env-summary{grid-template-columns:1fr}}
 
-.freshness-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:#546e7a}.freshness-row span{border:1px solid #dae5e8;border-radius:6px;padding:4px 7px;background:#f7fafb}.exposure-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.exposure-grid label{font-size:12px;font-weight:650}.exposure-grid select{display:block;margin-top:6px}.timeline-grid{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px}.hour-card{flex:0 0 155px;padding:12px;border:1px solid #dbe5e8;border-radius:10px;background:#f7fafb}.hour-card h3{font-size:12px;margin:0 0 8px}.hour-card>strong{font-size:20px;display:block;margin:0 0 10px}.timeline-badge{display:block;padding:6px;margin:5px 0;border-radius:6px;font-size:11px;font-weight:650}.action-group{border-left:4px solid #75a5aa;padding:4px 14px;margin:12px 0;background:#f7fafb;border-radius:8px}.action-group[data-priority="3"],.action-group[data-priority="4"]{border-left-color:#ba3d35}.action-group h3{margin-top:8px}.action-group ul{padding-left:18px}@media(max-width:420px){.exposure-grid{grid-template-columns:1fr}}
+.freshness-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:#546e7a}.freshness-row span{border:1px solid #dae5e8;border-radius:6px;padding:4px 7px;background:#f7fafb}.timeline-grid{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px}.hour-card{flex:0 0 155px;padding:12px;border:1px solid #dbe5e8;border-radius:10px;background:#f7fafb}.hour-card h3{font-size:12px;margin:0 0 8px}.hour-card>strong{font-size:20px;display:block;margin:0 0 10px}.timeline-badge{display:block;padding:6px;margin:5px 0;border-radius:6px;font-size:11px;font-weight:650}.action-group{border-left:4px solid #75a5aa;padding:4px 14px;margin:12px 0;background:#f7fafb;border-radius:8px}.action-group[data-priority="3"],.action-group[data-priority="4"]{border-left-color:#ba3d35}.action-group h3{margin-top:8px}.action-group ul{padding-left:18px}
+#advancedWeatherDetails{margin-bottom:14px}#advancedWeatherDetails .env-card{margin-bottom:10px}
 </style>
 </head>
 <body>
@@ -412,12 +413,12 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 <div class="env-label">UV Index</div><div class="env-value" id="envUVValue">—</div><div class="env-note" id="envUVNote">Waiting for weather data</div>
 </div>
 <div class="env-card" data-level="neutral" id="envStormCard">
-<div class="env-label">Thunderstorm / atmospheric instability</div><div class="env-value" id="envStormValue">—</div><div class="env-note" id="envStormNote">Waiting for weather data</div>
+<div class="env-label">Thunderstorm indication</div><div class="env-value" id="envStormValue">—</div><div class="env-note" id="envStormNote">Waiting for weather data</div>
 </div>
 <div class="env-card" data-level="neutral" id="envVisibilityCard">
 <div class="env-label">Visibility</div><div class="env-value" id="envVisibilityValue">—</div><div class="env-note" id="envVisibilityNote">Waiting for weather data</div>
 </div>
-<div class="env-card" data-level="neutral" id="envGustCard"><div class="env-label">Wind gust</div><div class="env-value" id="envGustValue">—</div><div class="env-note" id="envGustNote">Waiting for weather data</div></div><div class="env-card" data-level="neutral" id="envPressureCard"><div class="env-label">Surface pressure</div><div class="env-value" id="envPressureValue">—</div><div class="env-note" id="envPressureNote">Waiting for weather data</div></div></div></details>
+<div class="env-card" data-level="neutral" id="envGustCard"><div class="env-label">Wind gust</div><div class="env-value" id="envGustValue">—</div><div class="env-note" id="envGustNote">Waiting for weather data</div></div></div><details class="context-panel" id="advancedWeatherDetails"><summary>Advanced weather details</summary><div class="env-card" data-level="neutral" id="envCAPECard"><div class="env-label">Atmospheric instability · CAPE</div><div class="env-value" id="envCAPEValue">—</div><div class="env-note" id="envCAPENote">Waiting for weather data</div></div><p class="hint">CAPE describes energy available for rising air. It does not establish storm probability, timing or severity. Follow official warnings and seek shelter if thunder is heard.</p></details></details>
 <details class="context-panel" id="settingsPanel"><summary>Location, data &amp; history options</summary><div class="controls">
 <div class="card">
 <label for="sourceSelect">Data source</label>
@@ -474,11 +475,7 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 </div>
 <button class="secondary" onclick="window.print()">Print / Save PDF</button>
 <button class="tertiary" onclick="clearHistory()">Clear Today's Points</button>
-</div><p class="hint" id="requestDetail" role="status"></p></details><div class="action-toolbar"><button class="primary" onclick="fetchAndPlot()">Refresh Now</button><button class="primary" onclick="openRecommendedActions()">Recommended actions</button></div><details class="context-panel"><summary>Detailed health guidance</summary><div class="action-toolbar"><button class="quaternary" id="adviceButton" onclick="openAdvisory()">Heat Safety Advice</button><button class="quaternary" disabled="" id="aqiAdviceButton" onclick="openAQIAdvisory()" type="button">AQI Health Advisory</button><button class="secondary" onclick="openInfoModal('altitudeModal')">High-altitude guidance</button></div></details><details class="context-panel" id="exposurePanel"><summary>Exposure &amp; clothing options · optional</summary><p class="hint">Choose what applies to your outdoor activity. Your selections tailor the Recommended actions popup.</p><div class="exposure-grid">
-<label>Duration<select id="exposureDuration" onchange="saveExposure()"><option value="">Not specified</option><option value="short">Less than 1 hour</option><option value="long">1 hour or longer</option></select></label>
-<label>Activity<select id="exposureActivity" onchange="saveExposure()"><option value="">Not specified</option><option value="rest">Resting / standing</option><option value="light">Light activity</option><option value="heavy">Strenuous activity</option></select></label>
-<label>Sun exposure<select id="exposureSun" onchange="saveExposure()"><option value="">Not specified</option><option value="shade">Mostly shade</option><option value="sun">Direct sun</option></select></label>
-<label>Clothing / conditions<select id="exposureWet" onchange="saveExposure()"><option value="">Not specified</option><option value="dry">Dry</option><option value="wet">Wet clothing / rain / snow</option></select></label></div><div class="action-toolbar"><button class="secondary" onclick="openRecommendedActions()">View tailored guidance</button><button class="secondary" onclick="resetExposure()">Reset options</button></div></details>
+</div><p class="hint" id="requestDetail" role="status"></p></details><div class="action-toolbar"><button class="primary" onclick="fetchAndPlot()">Refresh Now</button><button class="primary" onclick="openRecommendedActions()">Recommended actions</button></div><details class="context-panel"><summary>Detailed health guidance</summary><div class="action-toolbar"><button class="quaternary" id="adviceButton" onclick="openAdvisory()">Heat Safety Advice</button><button class="quaternary" disabled="" id="aqiAdviceButton" onclick="openAQIAdvisory()" type="button">AQI Health Advisory</button><button class="secondary" onclick="openInfoModal('altitudeModal')">High-altitude guidance</button></div></details>
 <div class="chart-mode-bar">
 <label for="chartMode">Chart view</label>
 <select id="chartMode" onchange="onChartModeChange()">
@@ -506,9 +503,9 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 </div>
 <div aria-labelledby="referencesModalTitle" aria-modal="true" class="modal-overlay hidden" id="referencesModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('referencesModal')">×</button><h2 id="referencesModalTitle">References &amp; calculation methods</h2><div class="info-content"><div class="zone-desc" id="zoneDesc" style="margin-top: 20px; font-size: 15px; text-align: center; color: #333;">
 <strong>Green = Safe    |    Yellow = Caution    |    Red = Danger</strong>
-</div><section class="methods"><h3>Heat Index / feels like</h3><p>Temperature is converted to °F: F = 1.8T + 32. Initial estimate: H = 0.5[F + 61 + 1.2(F − 68) + 0.094R], where R is relative humidity (%). If (H + F)/2 ≥80°F, the Rothfusz regression is used:</p><p><code>H = −42.379 + 2.04901523F + 10.14333127R − 0.22475541FR − 0.00683783F² − 0.05481717R² + 0.00122874F²R + 0.00085282FR² − 0.00000199F²R².</code></p><p>For R&lt;13% and F=80–112°F, subtract [(13−R)/4]√[(17−|F−95|)/17]. For R&gt;85% and F=80–87°F, add [(R−85)/10][(87−F)/5]. Convert back with (H−32)×5/9. This is a screening estimate, not a measured body temperature.</p><p><strong>Calculation basis:</strong> the displayed “feels like” temperature uses the US National Weather Service Rothfusz Heat Index regression (temperature + relative humidity). The green/yellow/red chart background retains this application's existing Safe/Caution/Danger boundary curves. The Safe→Caution boundary is T = 40.1247562 − 0.287219702RH + 0.00195590150RH² − 0.00000452294349RH³. The Caution→Danger boundary is T = min(42.5, 52.9675892 − 0.468153228RH + 0.00421088398RH² − 0.0000162471061RH³), with 42.5°C used below RH 29.137%. These boundary curves are local decision-aid equations in this application and are not official NWS alert thresholds. For occupational heat-stress control, NIOSH recommends WBGT for exposure limits; Heat Index is a screening alternative when WBGT is unavailable and does not account fully for workload, radiant heat or clothing/PPE.</p><p><strong>Calculation basis:</strong> Wind chill = 13.12 + 0.6215T − 11.37V<sup>0.16</sup> + 0.3965TV<sup>0.16</sup>, where T is °C and V is wind speed in km/h. In this app it is applied at or below 10°C and above 4.8 km/h, matching the NWS definition range. Low-to-Extreme risk bands and approximate frostbite times follow Environment Canada; the &gt;0°C “Minimal” band is an app display category.</p><h3>Indian AQI</h3><p>Each pollutant sub-index is calculated by linear interpolation between CPCB concentration breakpoints: I = I_low + (I_high − I_low) × (C − C_low)/(C_high − C_low). Overall AQI is the rounded maximum sub-index. At least three pollutants, including PM₂.₅ or PM₁₀, are required by this implementation; values above its tables are capped at 500.</p><p>Model estimates use 24-hour averages for PM₂.₅, PM₁₀, NO₂ and SO₂ (at least 18 hourly values), and 8-hour averages for O₃ and CO (at least six). CO is converted from µg/m³ to mg/m³. A configured CPCB service is preferred when a station within 25 km has a reading no older than three hours. Otherwise Open-Meteo modelled pollutants are used; the app estimates Indian AQI rather than displaying US AQI.</p><h3>UV, visibility, storms &amp; elevation</h3><p>Live location readings request hourly UV Index, visibility and CAPE from Open-Meteo, selecting the hour matching its current weather timestamp. UV is a model estimate, not an on-device measurement. Visibility is modelled distance in metres. WMO codes 95, 96 and 99 indicate thunderstorms; CAPE is an instability screening indicator, not an official warning. Elevation is terrain height, converted to feet with metres × 3.28084; it is not a GPS altitude measurement.</p><p>These extra parameters are not requested for selected historical/future times or manually entered weather values and may show unavailable. Automatic chart selection uses cold below 20°C; this switch is an app display choice, not a medical threshold. Missing wind uses air temperature without wind-chill correction; missing humidity prevents heat assessment.</p><h3>Storm and visibility display thresholds</h3><p>CAPE categories used here: &lt;1,000 J/kg weak; 1,000–&lt;2,500 moderate; 2,500–&lt;4,000 strong; ≥4,000 extreme instability. Visibility: &lt;1 km fog-range; 1–&lt;5 km reduced; ≥5 km good viewing distance. The 5 km division is an app display threshold. Surface pressure is requested from the live weather API in hPa; wind gusts are displayed separately from sustained wind and are not substituted into wind chill.</p><h3>Weather and air-quality data documentation</h3><p><a href="https://open-meteo.com/en/docs/air-quality-api" rel="noopener" target="_blank">Open-Meteo Air Quality API</a> · <a href="https://mausam.imd.gov.in/" rel="noopener" target="_blank">IMD official weather warnings</a></p></section><details class="env-basis" id="environmentBasis" open="">
+</div><section class="methods"><h3>Heat Index / feels like</h3><p>Temperature is converted to °F: F = 1.8T + 32. Initial estimate: H = 0.5[F + 61 + 1.2(F − 68) + 0.094R], where R is relative humidity (%). If (H + F)/2 ≥80°F, the Rothfusz regression is used:</p><p><code>H = −42.379 + 2.04901523F + 10.14333127R − 0.22475541FR − 0.00683783F² − 0.05481717R² + 0.00122874F²R + 0.00085282FR² − 0.00000199F²R².</code></p><p>For R&lt;13% and F=80–112°F, subtract [(13−R)/4]√[(17−|F−95|)/17]. For R&gt;85% and F=80–87°F, add [(R−85)/10][(87−F)/5]. Convert back with (H−32)×5/9. This is a screening estimate, not a measured body temperature.</p><p><strong>Calculation basis:</strong> the displayed “feels like” temperature uses the US National Weather Service Rothfusz Heat Index regression (temperature + relative humidity). The green/yellow/red chart background retains this application's existing Safe/Caution/Danger boundary curves. The Safe→Caution boundary is T = 40.1247562 − 0.287219702RH + 0.00195590150RH² − 0.00000452294349RH³. The Caution→Danger boundary is T = min(42.5, 52.9675892 − 0.468153228RH + 0.00421088398RH² − 0.0000162471061RH³), with 42.5°C used below RH 29.137%. These boundary curves are local decision-aid equations in this application and are not official NWS alert thresholds. For occupational heat-stress control, NIOSH recommends WBGT for exposure limits; Heat Index is a screening alternative when WBGT is unavailable and does not account fully for workload, radiant heat or clothing/PPE.</p><p><strong>Calculation basis:</strong> Wind chill = 13.12 + 0.6215T − 11.37V<sup>0.16</sup> + 0.3965TV<sup>0.16</sup>, where T is °C and V is wind speed in km/h. In this app it is applied at or below 10°C and above 4.8 km/h, matching the NWS definition range. Low-to-Extreme risk bands and approximate frostbite times follow Environment Canada; the &gt;0°C “Minimal” band is an app display category.</p><h3>Indian AQI</h3><p>Each pollutant sub-index is calculated by linear interpolation between CPCB concentration breakpoints: I = I_low + (I_high − I_low) × (C − C_low)/(C_high − C_low). Overall AQI is the rounded maximum sub-index. At least three pollutants, including PM₂.₅ or PM₁₀, are required by this implementation; values above its tables are capped at 500.</p><p>Model estimates use 24-hour averages for PM₂.₅, PM₁₀, NO₂ and SO₂ (at least 18 hourly values), and 8-hour averages for O₃ and CO (at least six). CO is converted from µg/m³ to mg/m³. A configured CPCB service is preferred when a station within 25 km has a reading no older than three hours. Otherwise Open-Meteo modelled pollutants are used; the app estimates Indian AQI rather than displaying US AQI.</p><h3>UV, visibility, storms &amp; elevation</h3><p>Live location readings request hourly UV Index, visibility and CAPE from Open-Meteo, selecting the hour matching its current weather timestamp. UV is a model estimate, not an on-device measurement. Visibility is modelled distance in metres. WMO codes 95, 96 and 99 indicate thunderstorms; CAPE is an instability screening indicator, not an official warning. Elevation is terrain height, converted to feet with metres × 3.28084; it is not a GPS altitude measurement.</p><p>These extra parameters are not requested for selected historical/future times or manually entered weather values and may show unavailable. Automatic chart selection uses cold below 20°C; this switch is an app display choice, not a medical threshold. Missing wind uses air temperature without wind-chill correction; missing humidity prevents heat assessment.</p><h3>Storm and visibility display thresholds</h3><p>CAPE categories used here: &lt;1,000 J/kg weak; 1,000–&lt;2,500 moderate; 2,500–&lt;4,000 strong; ≥4,000 extreme instability. Visibility: &lt;1 km fog-range; 1–&lt;5 km reduced; ≥5 km good viewing distance. The 5 km division is an app display threshold. Wind gusts are displayed separately from sustained wind and are not substituted into wind chill.</p><h3>Weather and air-quality data documentation</h3><p><a href="https://open-meteo.com/en/docs/air-quality-api" rel="noopener" target="_blank">Open-Meteo Air Quality API</a> · <a href="https://mausam.imd.gov.in/" rel="noopener" target="_blank">IMD official weather warnings</a></p></section><details class="env-basis" id="environmentBasis" open="">
 <summary>Summary strip basis &amp; references</summary>
-<p><strong>Altitude:</strong> terrain elevation from Open-Meteo/Copernicus DEM, displayed in metres and feet; ≥2,450 m (about 8,000 ft) is flagged because altitude illness can occur in unacclimatized people, while the preventive staged schedule below begins at 2,700 m (about 9,000 ft). <strong>UV:</strong> WHO categories (0–2 Low, 3–5 Moderate, 6–7 High, 8–10 Very high, 11+ Extreme). <strong>Storm:</strong> WMO thunderstorm weather codes are prioritised; otherwise CAPE is shown as a screening indicator of atmospheric instability, not as an official storm warning. <strong>Visibility:</strong> modelled viewing distance; &lt;1 km is flagged as fog-range visibility per WMO.</p>
+<p><strong>Altitude:</strong> terrain elevation from Open-Meteo/Copernicus DEM, displayed in metres and feet; ≥2,450 m (about 8,000 ft) is flagged because altitude illness can occur in unacclimatized people, while the preventive staged schedule below begins at 2,700 m (about 9,000 ft). <strong>UV:</strong> WHO categories (0–2 Low, 3–5 Moderate, 6–7 High, 8–10 Very high, 11+ Extreme). <strong>Storm:</strong> the thunderstorm card uses WMO weather codes only. CAPE is shown separately inside Advanced weather details as an instability indicator, not as an official storm warning. <strong>Visibility:</strong> modelled viewing distance; &lt;1 km is flagged as fog-range visibility per WMO.</p>
 <p><a href="https://open-meteo.com/en/docs/elevation-api" rel="noopener" target="_blank">Open-Meteo elevation</a> · <a href="https://www.cdc.gov/yellow-book/hcp/environmental-hazards-risks/high-altitude-travel-and-altitude-illness.html" rel="noopener" target="_blank">CDC altitude illness</a> · <a href="https://www.who.int/docs/default-source/inaugural-who-partners-forum/the-uv-index-sun-protection-table-notes-on-supplied-clipart.pdf" rel="noopener" target="_blank">WHO UV Index</a> · <a href="https://www.weather.gov/ilx/swop-severetopics-CAPE" rel="noopener" target="_blank">NOAA/NWS CAPE</a> · <a href="https://cloudatlas.wmo.int/fog-as-seen-from-aircraft.html" rel="noopener" target="_blank">WMO fog definition</a>. For severe-weather decisions in India, confirm against <a href="https://mausam.imd.gov.in/" rel="noopener" target="_blank">IMD warnings</a>.</p>
 </details><div class="chart-reference-note" id="chartReferenceNote"></div><section class="bibliography" id="bibliography">
 <h2>Bibliography &amp; advisory references</h2>
@@ -532,7 +529,7 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 <p class="bibliography-note">This decision aid provides preventive guidance and screening information. Weather warnings and medical decisions should be confirmed with the relevant official service or healthcare professional when required.</p>
 </section><div class="source-note" style="margin-top: 15px; text-align: center; font-size: 14px; color: #555; font-style: italic;">
   Conceptualized and prepared by Saurabh Mahajan
-</div><section><h3>Actions, exposure settings &amp; forecast timeline</h3><p>The next 12 forecast hours use Open-Meteo temperature, humidity, sustained wind and UV data. Thermal categories use the same equations as the chart; automatic mode switches below 20°C. The AQI forecast applies the existing Indian AQI interpolation and rolling averages to hourly model pollutant forecasts; unavailable pollutants remain unavailable. Weather and AQI are separate model estimates.</p><p>Weather age uses the provider timestamp; retrieval time is shown in the source-label tooltip. Live weather older than 90 minutes is labelled stale as an app display rule. A forecast validity time is not its model-run issue time. Manual values are labelled with entry time and are not verified measurements.</p><p>Recommended actions use the displayed conditions; thunderstorm indications are listed first, followed by higher-category hazards. This ordering is a presentation choice, not a validated combined risk score. Exposure selections change advice only, without applying numerical adjustments. Clothing suggestions are general layering guidance; garment insulation, wetness, workload and individual factors prevent an exact clothing count or safe duration being inferred from air temperature.</p><p><a href="https://www.osha.gov/winter-weather/cold-stress" rel="noopener" target="_blank">OSHA: winter weather and cold stress</a> · <a href="https://www.weather.gov/safety/lightning-tips" rel="noopener" target="_blank">NWS: lightning safety</a> · <a href="https://www.osha.gov/heat-exposure/water-rest-shade" rel="noopener" target="_blank">OSHA: water, rest and shade</a></p></section></div></div></div><div aria-labelledby="altitudeModalTitle" aria-modal="true" class="modal-overlay hidden" id="altitudeModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('altitudeModal')">×</button><h2 id="altitudeModalTitle">High-altitude preventive guidance</h2><div class="info-content"><details class="ha-prevention" id="highAltitudePrevention" open="">
+</div><section><h3>Actions, clothing guidance &amp; forecast timeline</h3><p>The next 12 forecast hours use Open-Meteo temperature, humidity, sustained wind and UV data. Thermal categories use the same equations as the chart; automatic mode switches below 20°C. The AQI forecast applies the existing Indian AQI interpolation and rolling averages to hourly model pollutant forecasts; unavailable pollutants remain unavailable. Weather and AQI are separate model estimates.</p><p>Weather age uses the provider timestamp; retrieval time is shown in the source-label tooltip. Live weather older than 90 minutes is labelled stale as an app display rule. A forecast validity time is not its model-run issue time. Manual values are labelled with entry time and are not verified measurements.</p><p>Recommended actions use the displayed conditions; thunderstorm indications are listed first, followed by higher-category hazards. This ordering is a presentation choice, not a validated combined risk score. Clothing suggestions are general layering guidance; garment insulation, wetness, workload and individual factors prevent an exact clothing count or safe duration being inferred from air temperature.</p><p><a href="https://www.osha.gov/winter-weather/cold-stress" rel="noopener" target="_blank">OSHA: winter weather and cold stress</a> · <a href="https://www.weather.gov/safety/lightning-tips" rel="noopener" target="_blank">NWS: lightning safety</a> · <a href="https://www.osha.gov/heat-exposure/water-rest-shade" rel="noopener" target="_blank">OSHA: water, rest and shade</a></p></section></div></div></div><div aria-labelledby="altitudeModalTitle" aria-modal="true" class="modal-overlay hidden" id="altitudeModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('altitudeModal')">×</button><h2 id="altitudeModalTitle">High-altitude preventive guidance</h2><div class="info-content"><details class="ha-prevention" id="highAltitudePrevention" open="">
 <summary>High-altitude preventive guidance</summary>
 <div class="ha-context" id="haContext">Use this section when planning ascent to or stay at higher elevations.</div>
 <h3>1. Gradual ascent</h3>
@@ -576,17 +573,12 @@ button{transition:background .15s,transform .15s;font-weight:650;font-size:13px;
 <p>Medication to prevent altitude illness may be appropriate when rapid ascent is unavoidable or in people with a prior history of altitude illness. It should be considered after medical assessment rather than self-started.</p>
 <p class="ha-note"><strong>Sources:</strong> staged schedule adapted from <em>Medical Memorandum No. 189 (2017), Problems of High Altitude</em>; general ascent and prevention principles cross-checked against CDC Yellow Book 2026 and Wilderness Medical Society 2024 guidance. See References &amp; methods.</p>
 </details></div></div></div><div aria-labelledby="actionsTitle" aria-modal="true" class="modal-overlay hidden" id="actionsModal" role="dialog"><div class="modal-box info-box"><button aria-label="Close" class="modal-close" onclick="closeInfoModal('actionsModal')">×</button><h2 id="actionsTitle">Recommended actions</h2><div id="recommendedActionsBody"></div></div></div><script>
-// Optional exposure preferences and planning view.
+// Recommended actions and planning view.
 let hourlyOutlook = [];
 let hourlyAQI = [];
 let outlookZone = '';
 let weatherContext = null;
 let weatherRequestId = 0;
-const EXPOSURE_IDS = ['exposureDuration','exposureActivity','exposureSun','exposureWet'];
-function exposureValues(){return Object.fromEntries(EXPOSURE_IDS.map(id=>[id,document.getElementById(id).value]));}
-function saveExposure(){try{localStorage.setItem('environmentExposureV1',JSON.stringify(exposureValues()));}catch(_){}renderActionContent();}
-function restoreExposure(){try{const saved=JSON.parse(localStorage.getItem('environmentExposureV1')||'{}');for(const id of EXPOSURE_IDS){const el=document.getElementById(id);if([...el.options].some(o=>o.value===saved[id]))el.value=saved[id];}}catch(_){} }
-function resetExposure(){for(const id of EXPOSURE_IDS)document.getElementById(id).value='';saveExposure();}
 function ageLabel(date){const minutes=Math.max(0,Math.floor((Date.now()-new Date(date).getTime())/60000));return minutes<1?'just now':minutes<60?`${minutes} min ago`:`${Math.floor(minutes/60)} h ${minutes%60} min ago`;}
 function updateFreshness(){
  const el=document.getElementById('sourceFreshness');
@@ -608,7 +600,7 @@ function thermalBand(r, choice='auto'){
  if(!Number.isFinite(r.rh))return null;
  const name=heatZone(r.temp_c,r.rh);return {...HEAT_ADVISORY[name],name,mode,feel:feelsLikeC(r.temp_c,r.rh),priority:name==='Danger'?3:name==='Caution'?2:1};
 }
-function actionGroups(r,aq,e){
+function actionGroups(r,aq){
  const groups=[];const add=(title,priority,items)=>groups.push({title,priority,items});
  if(r){
   const b=thermalBand(r);if(b)add(`${b.mode==='cold'?'Cold':'Heat'} · ${b.name}`,b.priority,b.actions.slice(0,3));
@@ -622,15 +614,10 @@ function actionGroups(r,aq,e){
    if(chill<=0)clothing.push('Add a warm hat, gloves and insulated footwear; keep socks dry.');
    if(chill<=-10)clothing.push('Strengthen insulation and cover the face and extremities; plan access to warm, dry shelter.');
    if(chill<=-28)clothing.push('Exposed skin is at frostbite risk. Reduce exposure and follow the cold advisory; clothing does not guarantee protection.');
-   if(e.exposureWet==='wet')clothing.unshift('Change wet clothing promptly and seek dry shelter. Carry spare dry socks and gloves.');
-   if(e.exposureActivity==='heavy')clothing.push('Vent or remove insulation before sweating heavily, then replace layers during rests.');
-   if(e.exposureActivity==='rest'||e.exposureDuration==='long')clothing.push('Plan extra insulation during inactivity and regular warm-up breaks; carry a spare dry layer.');
    add('Clothing & warm-up plan',chill<=-28?3:2,clothing);
   }else if(Number.isFinite(r.temp_c)){
    const items=['Use lightweight, breathable clothing where practical. Required protective equipment may increase heat strain.'];
-   if(e.exposureActivity==='heavy'||e.exposureDuration==='long')items.push('Reduce sustained exertion and arrange more frequent rest in a cool area with drinking water available.');
-   if(e.exposureSun==='sun')items.push('Move activity into shade where possible; direct sun can increase heat strain beyond the displayed index.');
-   add('Exposure & clothing',1,items);
+   add('Clothing guidance',1,items);
   }
  }
  if(aq){const c=categorizeAQI(aq.aqi);add(`Air quality · ${c.name}`,aq.aqi>200?3:aq.aqi>100?2:1,[c.general,`Children, older adults and people with heart or lung conditions: ${c.vulnerable}`]);}
@@ -642,8 +629,8 @@ function renderActionContent(){
  const body=document.getElementById('recommendedActionsBody');body.replaceChildren();
  const note=document.createElement('p');note.className='hint';note.textContent=weatherContext&&weatherContext.kind!=='live'? 'Advice for the displayed reading. Manual and selected-time data may not describe current conditions.' : 'Actions for the latest displayed weather and AQI. Unknown conditions are not treated as low risk.';body.append(note);
  if(weatherContext?.kind==='live'&&Date.now()-weatherContext.time.getTime()>90*60000){const warning=document.createElement('p');warning.className='advisory-emergency';warning.textContent='Weather reading is more than 90 minutes old. Refresh before planning activity.';body.append(warning);}
- for(const g of actionGroups(latestDashboardReading,currentAQI,exposureValues())){const card=document.createElement('section');card.className='action-group';card.dataset.priority=g.priority;const h=document.createElement('h3');h.textContent=g.title;const ul=document.createElement('ul');for(const t of [...new Set(g.items)]){const li=document.createElement('li');li.textContent=t;ul.append(li);}card.append(h,ul);body.append(card);}
- const foot=document.createElement('p');foot.className='hint';foot.textContent='Exposure choices tailor advice only. They do not change Heat Index, wind chill or AQI, and do not establish a safe exposure time or exact clothing requirement.';body.append(foot);
+ for(const g of actionGroups(latestDashboardReading,currentAQI)){const card=document.createElement('section');card.className='action-group';card.dataset.priority=g.priority;const h=document.createElement('h3');h.textContent=g.title;const ul=document.createElement('ul');for(const t of [...new Set(g.items)]){const li=document.createElement('li');li.textContent=t;ul.append(li);}card.append(h,ul);body.append(card);}
+ const foot=document.createElement('p');foot.className='hint';foot.textContent='Clothing guidance is general. Individual needs, garment insulation, wetness and activity affect protection; the app does not establish an exact clothing requirement or a safe exposure time.';body.append(foot);
 }
 function openRecommendedActions(){renderActionContent();openInfoModal('actionsModal');}
 function resetOutlook(message='Choose a live location to view the next 12 hours.') {hourlyOutlook=[];hourlyAQI=[];document.getElementById('timelineStatus').textContent=message;document.getElementById('timelineGrid').replaceChildren();}
@@ -1324,12 +1311,11 @@ function setEnvCard(prefix, value, note, level = 'neutral') {
 }
 
 function resetEnvironmentSummary(note = 'Not available for this reading') {
-  for (const key of ['Altitude', 'UV', 'Storm', 'Visibility', 'Gust', 'Pressure']) setEnvCard(key, '—', note, 'neutral');
+  for (const key of ['Altitude', 'UV', 'Storm', 'Visibility', 'Gust', 'CAPE']) setEnvCard(key, '—', note, 'neutral');
 }
 
 function renderEnvironmentSummary(reading) {
   setEnvCard('Gust', Number.isFinite(reading.gust_kmh) ? reading.gust_kmh.toFixed(1)+' km/h' : '—', 'Brief maximum wind speed');
-  setEnvCard('Pressure', Number.isFinite(reading.pressure_hpa) ? reading.pressure_hpa.toFixed(1)+' hPa' : '—', 'Unavailable when the source does not supply pressure');
   // Altitude: CDC uses a sleeping altitude of 2,450 m (8,000 ft) as a practical
   // threshold at which unacclimatized travellers can be at risk of altitude illness.
   if (Number.isFinite(reading.elevation_m)) {
@@ -1368,25 +1354,22 @@ function renderEnvironmentSummary(reading) {
     setEnvCard('UV', '—', 'UV index unavailable for this source/time', 'neutral');
   }
 
-  // WMO code 95/96/99 = thunderstorm. Otherwise display CAPE as an instability
-  // screening indicator. NOAA/NWS stresses CAPE is only one ingredient, not a warning.
+  // Thunderstorm indication uses the provider weather code only.
   const wc = Number.isFinite(reading.weather_code) ? Math.round(reading.weather_code) : null;
-  const cape = Number.isFinite(reading.cape_jkg) ? reading.cape_jkg : null;
-  const thunder = [95, 96, 99].includes(wc);
-  if (thunder) {
-    const capeText = cape !== null ? ` · CAPE ${Math.round(cape)} J/kg` : '';
-    setEnvCard('Storm', 'Thunderstorm indicated', `WMO weather code ${wc}${capeText}`, 'alert');
-  } else if (cape !== null) {
-    let label, level;
-    if (cape < 1000) { label = 'Weak instability'; level = 'ok'; }
-    else if (cape < 2500) { label = 'Moderate instability'; level = 'watch'; }
-    else if (cape < 4000) { label = 'Strong instability'; level = 'alert'; }
-    else { label = 'Extreme instability'; level = 'extreme'; }
-    setEnvCard('Storm', label, `CAPE ${Math.round(cape)} J/kg · screening indicator only`, level);
+  if ([95,96,99].includes(wc)) {
+    setEnvCard('Storm', 'Thunderstorm indicated', `Weather-model indication · WMO code ${wc}`, 'alert');
   } else if (wc !== null) {
-    setEnvCard('Storm', 'No thunderstorm code', `Current WMO weather code ${wc}`, 'ok');
+    setEnvCard('Storm', 'Not indicated', 'No thunderstorm code reported; local lightning remains possible', 'neutral');
   } else {
-    setEnvCard('Storm', '—', 'Storm indicator unavailable for this source/time', 'neutral');
+    setEnvCard('Storm', '—', 'Thunderstorm indication unavailable for this source/time', 'neutral');
+  }
+  // CAPE is supporting context inside the separate advanced dropdown.
+  const cape = Number.isFinite(reading.cape_jkg) ? reading.cape_jkg : null;
+  if (cape !== null) {
+    const label = cape < 1000 ? 'Weak instability' : cape < 2500 ? 'Moderate instability' : cape < 4000 ? 'Strong instability' : 'Extreme instability';
+    setEnvCard('CAPE', `${Math.round(cape)} J/kg · ${label}`, 'Atmospheric instability only; not a storm warning', 'neutral');
+  } else {
+    setEnvCard('CAPE', '—', 'CAPE unavailable for this source/time', 'neutral');
   }
 
   if (Number.isFinite(reading.visibility_m)) {
@@ -1673,7 +1656,7 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
   // Live mode (unchanged from before) — exact current reading.
   if (!targetDate) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-      `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code,surface_pressure` +
+      `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code` +
       `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,uv_index,visibility,cape&forecast_days=2&timezone=auto`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Open-Meteo request failed (' + res.status + ')');
@@ -1692,7 +1675,6 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
       gust_kmh: Number.isFinite(d.current.wind_gusts_10m) ? d.current.wind_gusts_10m : null,
       elevation_m: Number.isFinite(d.elevation) ? d.elevation : null,
       uv: hVal('uv_index'),
-      pressure_hpa: Number.isFinite(d.current.surface_pressure) ? d.current.surface_pressure : null,
       visibility_m: hVal('visibility'),
       cape_jkg: hVal('cape'),
       weather_code: Number.isFinite(d.current.weather_code) ? d.current.weather_code : null,
@@ -2108,7 +2090,6 @@ window.addEventListener('resize', () => {
 });
 
 // ================== Init ==================
-restoreExposure();
 setInterval(updateFreshness,60000);
 (function initHistoricalDefaults() {
   const now = new Date();
