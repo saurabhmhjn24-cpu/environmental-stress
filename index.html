@@ -178,6 +178,36 @@ button {
 .status-aqi-label { font-weight: 600; color: #334155; }
 .status-aqi { display: inline-block; font-weight: 700; white-space: nowrap; padding: 3px 9px; border-radius: 999px; background: #dcecff; color: #19456a; }
 
+/* ============ Step 2 environmental summary strip ============ */
+.env-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 10px;
+}
+.env-card {
+  background: #fff;
+  border: 1px solid #d6dbe1;
+  border-left: 5px solid #94a3b8;
+  border-radius: 9px;
+  padding: 9px 10px;
+  min-width: 0;
+}
+.env-card[data-level="ok"] { border-left-color: #2e7d32; }
+.env-card[data-level="watch"] { border-left-color: #f9a825; }
+.env-card[data-level="alert"] { border-left-color: #c62828; }
+.env-card[data-level="extreme"] { border-left-color: #6a1b9a; }
+.env-label { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: .04em; }
+.env-value { font-size: 18px; font-weight: 800; line-height: 1.2; margin-top: 2px; overflow-wrap: anywhere; }
+.env-note { font-size: 11px; line-height: 1.25; color: #64748b; margin-top: 3px; min-height: 28px; }
+.env-basis { margin: -2px 0 12px; font-size: 12px; color: #475569; }
+.env-basis summary { cursor: pointer; font-weight: 700; }
+.env-basis p { margin: 6px 0 0; line-height: 1.45; }
+.env-basis a, .chart-reference-note a, .advisory-references a { color: #0b57d0; }
+.chart-reference-note { margin-top: 9px; text-align: center; font-size: 12px; line-height: 1.45; color: #555; }
+.advisory-basis, .advisory-references { margin-top: 14px; padding: 10px 12px; border-radius: 8px; background: #f8fafc; border: 1px solid #dbe3eb; font-size: 12px; line-height: 1.45; }
+.advisory-references ul { margin: 6px 0 0; padding-left: 18px; }
+
 @keyframes pulse {
   0% { opacity: 1; }
   50% { opacity: 0.3; }
@@ -296,6 +326,7 @@ button {
   }
   /* When the bar stacks vertically, flex-basis 560px would become a height. */
   .status-main { flex: 0 0 auto; align-self: stretch; }
+  .env-summary { grid-template-columns: 1fr 1fr; }
 
   #plot {
     height: 62vh;
@@ -317,11 +348,12 @@ button {
   .controls button {
     grid-column: 1 / -1;
   }
+  .env-summary { grid-template-columns: 1fr; }
 }
 
 @media print {
   body { background: white; }
-  .controls, .hint, .status-bar, .chart-mode-bar { display: none !important; }
+  .controls, .hint, .status-bar, .chart-mode-bar, .env-summary, .env-basis { display: none !important; }
   .zone-desc, .source-note { display: block !important; margin-top: 20px; text-align: center; }
   .wrap { max-width: none; padding: 0; }
   .print-heading { display: block !important; }
@@ -345,6 +377,26 @@ button {
   </div>
   <div id="lastUpdated">—</div>
 </div>
+
+<div class="env-summary" id="environmentSummary" aria-label="Environmental summary">
+  <div class="env-card" id="envAltitudeCard" data-level="neutral">
+    <div class="env-label">Altitude</div><div class="env-value" id="envAltitudeValue">—</div><div class="env-note" id="envAltitudeNote">Waiting for location data</div>
+  </div>
+  <div class="env-card" id="envUVCard" data-level="neutral">
+    <div class="env-label">UV Index</div><div class="env-value" id="envUVValue">—</div><div class="env-note" id="envUVNote">Waiting for weather data</div>
+  </div>
+  <div class="env-card" id="envStormCard" data-level="neutral">
+    <div class="env-label">Storm / instability</div><div class="env-value" id="envStormValue">—</div><div class="env-note" id="envStormNote">Waiting for weather data</div>
+  </div>
+  <div class="env-card" id="envVisibilityCard" data-level="neutral">
+    <div class="env-label">Visibility</div><div class="env-value" id="envVisibilityValue">—</div><div class="env-note" id="envVisibilityNote">Waiting for weather data</div>
+  </div>
+</div>
+<details class="env-basis" id="environmentBasis">
+  <summary>Summary strip basis &amp; references</summary>
+  <p><strong>Altitude:</strong> terrain elevation from Open-Meteo/Copernicus DEM; ≥2,450 m is flagged because CDC notes that unacclimatized travellers sleeping at or above this altitude are at risk of altitude illness. <strong>UV:</strong> WHO categories (0–2 Low, 3–5 Moderate, 6–7 High, 8–10 Very high, 11+ Extreme). <strong>Storm:</strong> WMO thunderstorm weather codes are prioritised; otherwise CAPE is shown as a screening indicator of atmospheric instability, not as an official storm warning. <strong>Visibility:</strong> modelled viewing distance; &lt;1 km is flagged as fog-range visibility per WMO.</p>
+  <p><a href="https://open-meteo.com/en/docs/elevation-api" target="_blank" rel="noopener">Open-Meteo elevation</a> · <a href="https://www.cdc.gov/yellow-book/hcp/environmental-hazards-risks/high-altitude-travel-and-altitude-illness.html" target="_blank" rel="noopener">CDC altitude illness</a> · <a href="https://www.who.int/docs/default-source/inaugural-who-partners-forum/the-uv-index-sun-protection-table-notes-on-supplied-clipart.pdf" target="_blank" rel="noopener">WHO UV Index</a> · <a href="https://www.weather.gov/ilx/swop-severetopics-CAPE" target="_blank" rel="noopener">NOAA/NWS CAPE</a> · <a href="https://cloudatlas.wmo.int/fog-as-seen-from-aircraft.html" target="_blank" rel="noopener">WMO fog definition</a>. For operational severe-weather decisions in India, confirm against <a href="https://mausam.imd.gov.in/" target="_blank" rel="noopener">IMD warnings</a>.</p>
+</details>
 
 <div class="controls">
   <div class="card">
@@ -433,6 +485,7 @@ button {
 <div class="zone-desc" id="zoneDesc" style="margin-top: 20px; font-size: 15px; text-align: center; color: #333;">
   <strong>Green = Safe &nbsp;&nbsp; | &nbsp;&nbsp; Yellow = Caution &nbsp;&nbsp; | &nbsp;&nbsp; Red = Danger</strong>
 </div>
+<div class="chart-reference-note" id="chartReferenceNote"></div>
 
 <div class="source-note" style="margin-top: 15px; text-align: center; font-size: 14px; color: #555; font-style: italic;">
   Conceptualized and prepared by Saurabh Mahajan, Station Health Organisation Shakurbasti
@@ -593,6 +646,19 @@ const COLD_BANDS = [
 const COLD_WARNING_SIGNS = {
   hypothermia: ['Intense shivering, or shivering that stops', 'Slurred speech, clumsiness or stumbling', 'Drowsiness or confusion', 'Cold, pale skin and slow breathing'],
   frostbite: ['Numbness or tingling in fingers, toes, nose or ears', 'Skin that looks white, grey or waxy', 'Skin that feels hard or stiff']
+};
+
+// Clothing advice is intentionally a minimum/adaptive layering guide, not a fixed uniform scale.
+// OSHA recommends at least three loose layers for work in cold environments; insulation must be
+// increased for lower wind chill, wet conditions, low activity and prolonged exposure.
+const COLD_CLOTHING_GUIDANCE = {
+  'Minimal': 'For brief exposure, 1–2 dry adaptable layers may be adequate; carry a wind/rain shell if conditions are breezy or wet. For prolonged cold work, use the layered system below.',
+  'Low': 'Use at least a 3-layer system: moisture-wicking base layer + insulating middle layer + wind/water-resistant outer shell. Add a warm hat/ear cover and gloves.',
+  'Moderate': 'Use at least 3 loose layers with a heavier insulating mid-layer, windproof shell, insulated gloves or mittens, head/neck coverage and insulated footwear.',
+  'High': 'Full cold-weather ensemble: wicking base + substantial insulation + windproof/water-resistant shell, balaclava/face protection, insulated mittens and insulated waterproof boots. Leave no skin exposed.',
+  'Very high': 'Full cold-weather ensemble with extra insulation as needed; no exposed skin. Keep a warm shelter immediately available and shorten exposure periods.',
+  'Severe': 'Avoid routine outdoor exposure. Essential tasks require full specialist cold-weather protection, insulated face/hands/feet, buddy checks and immediate access to warm shelter.',
+  'Extreme': 'Remain in shelter. Outdoor work should be limited to critical tasks with specialist cold-weather PPE, no exposed skin, buddy system and reliable communication.'
 };
 
 function coldZoneIndex(effC) {
@@ -934,6 +1000,12 @@ function openAdvisory() {
   html += `<h3>Watch for — Heat Exhaustion</h3><ul>${HEAT_WARNING_SIGNS.exhaustion.map(s => `<li>${s}</li>`).join('')}</ul>`;
   html += `<h3>Watch for — Heat Stroke (medical emergency)</h3><ul>${HEAT_WARNING_SIGNS.stroke.map(s => `<li>${s}</li>`).join('')}</ul>`;
   html += `<div class="advisory-emergency">Heat stroke is a medical emergency. Call your local emergency number immediately, move the person to a cooler place and cool them with water, wet cloths or ice packs while help arrives. Do not give drinks to someone who is confused or unconscious.</div>`;
+  html += `<div class="advisory-basis"><strong>Calculation basis:</strong> the displayed “feels like” temperature uses the US National Weather Service Rothfusz Heat Index regression (temperature + relative humidity). The green/yellow/red chart background retains this application's existing Safe/Caution/Danger boundary curves. The Safe→Caution boundary is T = 40.1247562 − 0.287219702RH + 0.00195590150RH² − 0.00000452294349RH³. The Caution→Danger boundary is T = min(42.5, 52.9675892 − 0.468153228RH + 0.00421088398RH² − 0.0000162471061RH³), with 42.5°C used below RH 29.137%. These boundary curves are local decision-aid equations in this application and are not official NWS alert thresholds. For occupational or military heat-stress control, NIOSH recommends WBGT for exposure limits; Heat Index is a screening alternative when WBGT is unavailable and does not account fully for workload, radiant heat or clothing/PPE.</div>`;
+  html += `<div class="advisory-references"><strong>References</strong><ul>` +
+    `<li><a href="https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml" target="_blank" rel="noopener">US National Weather Service / WPC — Heat Index Equation</a></li>` +
+    `<li><a href="https://www.cdc.gov/niosh/heat-stress/communication-resources/app.html" target="_blank" rel="noopener">NIOSH — Heat Index vs WBGT for workers</a></li>` +
+    `<li><a href="https://www.osha.gov/index.php/heat-exposure/water-rest-shade" target="_blank" rel="noopener">OSHA — Water, Rest, Shade</a></li>` +
+    `</ul></div>`;
 
   body.innerHTML = html;
   document.getElementById('advisoryModal').classList.remove('hidden');
@@ -956,13 +1028,31 @@ function openColdAdvisory() {
     html += `<div class="advisory-zone" style="background:${band.color}; color:${band.textColor};">
       <strong>Current cold stress zone: ${band.name}</strong> (${last.temp_c}°C, wind ${last.wind_kmh} km/h, feels like ${chill}°C)<br>${band.summary}
     </div>`;
+    html += `<h3>Clothing recommendation</h3><p>${COLD_CLOTHING_GUIDANCE[band.name]}</p>`;
     html += '<h3>Recommended actions</h3><ul>' + band.actions.map(a => `<li>${a}</li>`).join('') + '</ul>';
   }
+
+  if (!last || !Number.isFinite(last.wind_kmh)) {
+    html += `<h3>Baseline clothing recommendation</h3><p>For work in cold conditions, use at least three loose layers: a moisture-wicking inner layer, an insulating middle layer, and a wind/rain-resistant outer layer. Add head, hand and foot protection and increase insulation as temperature, wind, wetness or exposure time worsen.</p>`;
+  }
+
+  html += `<h3>Warm shelter &amp; fluids</h3><ul>` +
+    `<li>For accommodation/rest areas, aim for at least <strong>18°C</strong> when feasible; WHO cites 18°C as a safe and well-balanced indoor temperature for general populations during cold seasons. Vulnerable people may require a higher temperature. This is a health-protection benchmark, not a field-work exposure limit.</li>` +
+    `<li>Maintain hydration. Provide warm non-alcoholic fluids; for a person with suspected hypothermia, give warm sweetened fluids only if fully alert and able to swallow.</li>` +
+    `<li>Keep clothing dry, replace wet socks/gloves promptly, use warm-up breaks and a buddy system as cold intensity increases.</li>` +
+    `</ul>`;
 
   html += `<h3>Watch for — Hypothermia</h3><ul>${COLD_WARNING_SIGNS.hypothermia.map(x => `<li>${x}</li>`).join('')}</ul>`;
   html += `<h3>Watch for — Frostbite</h3><ul>${COLD_WARNING_SIGNS.frostbite.map(x => `<li>${x}</li>`).join('')}</ul>`;
   html += `<div class="advisory-emergency">For suspected hypothermia, move the person to shelter, remove wet clothing, insulate and warm them gradually, give warm sweet drinks only if fully alert, and get medical help urgently. For frostbite, do not rub the skin or apply direct heat; protect the area and seek medical care.</div>`;
-  html += `<p class="hint">Risk bands follow the civil wind-chill scale and the freezing times are approximate for exposed skin. They do not account for wet clothing, workload, altitude or acclimatisation. Use alongside unit cold-injury procedures and medical judgement.</p>`;
+  html += `<p class="hint">The Low-to-Extreme bands follow the Environment Canada wind-chill scale; the >0°C “Minimal” band is an app display category. Freezing times are approximate for exposed skin. They do not account for wet clothing, workload, altitude or acclimatisation. Use alongside unit cold-injury procedures and medical judgement.</p>`;
+  html += `<div class="advisory-basis"><strong>Calculation basis:</strong> Wind chill = 13.12 + 0.6215T − 11.37V<sup>0.16</sup> + 0.3965TV<sup>0.16</sup>, where T is °C and V is wind speed in km/h. In this app it is applied at or below 10°C and above 4.8 km/h, matching the NWS definition range. Low-to-Extreme risk bands and approximate frostbite times follow Environment Canada; the >0°C “Minimal” band is an app display category.</div>`;
+  html += `<div class="advisory-references"><strong>References</strong><ul>` +
+    `<li><a href="https://www.canada.ca/en/services/environment/weather/severeweather/wind-chill-index.html" target="_blank" rel="noopener">Environment and Climate Change Canada — Wind Chill Index &amp; risk bands</a></li>` +
+    `<li><a href="https://www.weather.gov/safety/cold-wind-chill-chart" target="_blank" rel="noopener">US National Weather Service — Wind chill calculation range</a></li>` +
+    `<li><a href="https://www.osha.gov/emergency-preparedness/guides/cold-stress" target="_blank" rel="noopener">OSHA — Cold Stress Guide (layering, warm fluids, first aid)</a></li>` +
+    `<li><a href="https://www.who.int/publications/i/item/9789241550376" target="_blank" rel="noopener">WHO Housing and Health Guidelines — indoor cold / 18°C benchmark</a></li>` +
+    `</ul></div>`;
 
   body.innerHTML = html;
   document.getElementById('advisoryModal').classList.remove('hidden');
@@ -1050,9 +1140,77 @@ function setStatus(text, isError) {
   bar.style.borderColor = isError ? '#ffb3b3' : '#bcdcff';
 }
 
+function setEnvCard(prefix, value, note, level = 'neutral') {
+  document.getElementById(`env${prefix}Value`).textContent = value;
+  document.getElementById(`env${prefix}Note`).textContent = note;
+  document.getElementById(`env${prefix}Card`).dataset.level = level;
+}
+
+function resetEnvironmentSummary(note = 'Not available for this reading') {
+  for (const key of ['Altitude', 'UV', 'Storm', 'Visibility']) setEnvCard(key, '—', note, 'neutral');
+}
+
+function renderEnvironmentSummary(reading) {
+  // Altitude: CDC uses a sleeping altitude of 2,450 m (8,000 ft) as a practical
+  // threshold at which unacclimatized travellers can be at risk of altitude illness.
+  if (Number.isFinite(reading.elevation_m)) {
+    const m = Math.round(reading.elevation_m);
+    if (m >= 2450) setEnvCard('Altitude', `${m.toLocaleString()} m`, 'High-altitude illness risk if unacclimatized', m >= 3500 ? 'alert' : 'watch');
+    else if (m >= 1500) setEnvCard('Altitude', `${m.toLocaleString()} m`, 'Moderate elevation; below the CDC 2,450 m risk threshold', 'ok');
+    else setEnvCard('Altitude', `${m.toLocaleString()} m`, 'Low elevation', 'ok');
+  } else {
+    setEnvCard('Altitude', '—', 'Elevation unavailable for this source', 'neutral');
+  }
+
+  // WHO Global Solar UV Index categories.
+  if (Number.isFinite(reading.uv)) {
+    const uv = Math.max(0, reading.uv);
+    let label, level;
+    if (uv <= 2) { label = 'Low'; level = 'ok'; }
+    else if (uv <= 5) { label = 'Moderate'; level = 'watch'; }
+    else if (uv <= 7) { label = 'High'; level = 'watch'; }
+    else if (uv <= 10) { label = 'Very high'; level = 'alert'; }
+    else { label = 'Extreme'; level = 'extreme'; }
+    setEnvCard('UV', `${uv.toFixed(1)} · ${label}`, uv >= 3 ? 'Sun protection recommended' : 'Low UV exposure category', level);
+  } else {
+    setEnvCard('UV', '—', 'UV index unavailable for this source/time', 'neutral');
+  }
+
+  // WMO code 95/96/99 = thunderstorm. Otherwise display CAPE as an instability
+  // screening indicator. NOAA/NWS stresses CAPE is only one ingredient, not a warning.
+  const wc = Number.isFinite(reading.weather_code) ? Math.round(reading.weather_code) : null;
+  const cape = Number.isFinite(reading.cape_jkg) ? reading.cape_jkg : null;
+  const thunder = [95, 96, 99].includes(wc);
+  if (thunder) {
+    const capeText = cape !== null ? ` · CAPE ${Math.round(cape)} J/kg` : '';
+    setEnvCard('Storm', 'Thunderstorm indicated', `WMO weather code ${wc}${capeText}`, 'alert');
+  } else if (cape !== null) {
+    let label, level;
+    if (cape < 1000) { label = 'Weak instability'; level = 'ok'; }
+    else if (cape < 2500) { label = 'Moderate instability'; level = 'watch'; }
+    else if (cape < 4000) { label = 'Strong instability'; level = 'alert'; }
+    else { label = 'Extreme instability'; level = 'extreme'; }
+    setEnvCard('Storm', label, `CAPE ${Math.round(cape)} J/kg · screening indicator only`, level);
+  } else if (wc !== null) {
+    setEnvCard('Storm', 'No thunderstorm code', `Current WMO weather code ${wc}`, 'ok');
+  } else {
+    setEnvCard('Storm', '—', 'Storm indicator unavailable for this source/time', 'neutral');
+  }
+
+  if (Number.isFinite(reading.visibility_m)) {
+    const km = Math.max(0, reading.visibility_m) / 1000;
+    if (km < 1) setEnvCard('Visibility', `${km.toFixed(1)} km`, 'Fog-range visibility (<1 km, WMO definition)', 'alert');
+    else if (km < 5) setEnvCard('Visibility', `${km.toFixed(1)} km`, 'Reduced visibility', 'watch');
+    else setEnvCard('Visibility', `${km.toFixed(1)} km`, 'Good viewing distance', 'ok');
+  } else {
+    setEnvCard('Visibility', '—', 'Visibility unavailable for this source/time', 'neutral');
+  }
+}
+
 function onSourceChange() {
   const source = document.getElementById('sourceSelect').value;
   aqiSelectionVersion += 1;
+  resetEnvironmentSummary(source === 'manualaqi' ? 'Not applicable in manual AQI mode' : 'Refresh to load environmental context for this source');
   document.getElementById('locationSearchFields').classList.toggle('hidden', source !== 'location');
   if (source !== 'location' && typeof hideLocationSuggestions === 'function') hideLocationSuggestions();
   document.getElementById('manualFields').classList.toggle('hidden', source !== 'manual');
@@ -1312,16 +1470,29 @@ document.getElementById('clearLocationSearch').addEventListener('click', () => {
 async function fetchOpenMeteo(lat, lon, targetDate) {
   // Live mode (unchanged from before) — exact current reading.
   if (!targetDate) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+      `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code` +
+      `&hourly=uv_index,visibility,cape&forecast_days=1&timezone=auto`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Open-Meteo request failed (' + res.status + ')');
     const d = await res.json();
     if (!d.current) throw new Error('Open-Meteo returned no current data.');
+    const hourKey = String(d.current.time || '').slice(0, 13);
+    const hIdx = d.hourly && Array.isArray(d.hourly.time)
+      ? d.hourly.time.findIndex(t => String(t).slice(0, 13) === hourKey)
+      : -1;
+    const hVal = (key) => hIdx >= 0 && d.hourly && Array.isArray(d.hourly[key]) && Number.isFinite(d.hourly[key][hIdx])
+      ? d.hourly[key][hIdx] : null;
     return {
       temp_c: d.current.temperature_2m,
       rh: d.current.relative_humidity_2m,
       wind_kmh: Number.isFinite(d.current.wind_speed_10m) ? d.current.wind_speed_10m : null,
       gust_kmh: Number.isFinite(d.current.wind_gusts_10m) ? d.current.wind_gusts_10m : null,
+      elevation_m: Number.isFinite(d.elevation) ? d.elevation : null,
+      uv: hVal('uv_index'),
+      visibility_m: hVal('visibility'),
+      cape_jkg: hVal('cape'),
+      weather_code: Number.isFinite(d.current.weather_code) ? d.current.weather_code : null,
       time: new Date()
     };
   }
@@ -1344,7 +1515,8 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
     const rh = d.hourly.relative_humidity_2m[idx];
     if (temp === undefined || temp === null || rh === undefined || rh === null) return null;
     const wind = d.hourly.wind_speed_10m ? d.hourly.wind_speed_10m[idx] : null;
-    return { temp_c: temp, rh: rh, wind_kmh: Number.isFinite(wind) ? wind : null };
+    return { temp_c: temp, rh: rh, wind_kmh: Number.isFinite(wind) ? wind : null,
+      elevation_m: Number.isFinite(d.elevation) ? d.elevation : null };
   }
 
   let result = null;
@@ -1366,6 +1538,7 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
     temp_c: result.temp_c,
     rh: result.rh,
     wind_kmh: result.wind_kmh,
+    elevation_m: result.elevation_m,
     time: new Date(targetDate)
   };
 }
@@ -1398,6 +1571,10 @@ async function fetchAmbient(workerUrl, targetDate) {
     gust_kmh: num(d.gust_kmh),
     uv: num(d.uv),
     pressure_hpa: num(d.pressure_hpa),
+    elevation_m: null,
+    visibility_m: null,
+    cape_jkg: null,
+    weather_code: null,
     time: d.observed_at ? new Date(d.observed_at) : (targetDate || new Date())
   };
 }
@@ -1416,6 +1593,7 @@ async function fetchAndPlot() {
     targetDateTime = getTargetDateTime(); // null = live/"now", exactly as before
   } catch (err) {
     setStatus('Error: ' + err.message, true);
+    resetEnvironmentSummary('Unavailable because the weather request failed');
     return;
   }
   const isHistorical = targetDateTime !== null;
@@ -1426,6 +1604,7 @@ async function fetchAndPlot() {
   if (noAQIRecord) renderAQI(null, 'modelled', noAQIRecord);
 
   setStatus(isHistorical ? 'Fetching historical/forecast reading…' : 'Fetching latest reading…', false);
+  resetEnvironmentSummary(isHistorical ? 'Loading selected-time context…' : 'Loading environmental context…');
 
   try {
     let reading, locationLabel;
@@ -1464,7 +1643,7 @@ async function fetchAndPlot() {
         wind = parseFloat(windRaw);
         if (!Number.isFinite(wind) || wind < 0 || wind > 300) throw new Error('Wind speed must be a number between 0 and 300 km/h.');
       }
-      reading = { temp_c: temp, rh: rh, wind_kmh: wind, time: targetDateTime || new Date() };
+      reading = { temp_c: temp, rh: rh, wind_kmh: wind, elevation_m: null, uv: null, visibility_m: null, cape_jkg: null, weather_code: null, time: targetDateTime || new Date() };
       locationLabel = 'Manually entered reading';
       // No coordinates associated with a manually typed reading, so AQI stays unavailable.
     } else {
@@ -1476,6 +1655,8 @@ async function fetchAndPlot() {
       locationLabel = 'Shakurbasti weather station';
       // This station does not provide an AQI measurement.
     }
+
+    renderEnvironmentSummary(reading);
 
     const history = loadHistory();
     const feels_c = Math.round(feelsLikeC(reading.temp_c, reading.rh) * 10) / 10;
@@ -1586,12 +1767,19 @@ function applyModeUI(mode) {
     (cold ? 'Showing the cold stress chart' : 'Showing the heat stress chart') +
     (choice === 'auto' ? ` (automatic: below ${AUTO_COLD_BELOW_C} °C uses the cold chart)` : '');
   const desc = document.getElementById('zoneDesc');
+  const ref = document.getElementById('chartReferenceNote');
   if (cold) {
     desc.innerHTML = '<div style="margin-bottom:4px;"><strong>Feels-like (wind chill) risk bands</strong></div>' +
       COLD_BANDS.map(b => `<span class="zone-chip" style="background:${b.color}; color:${b.textColor};">${b.name}: ${b.range}</span>`).join('') +
       '<div style="margin-top:4px; font-size:12px; color:#555;">Wind chill is calculated only above 4.8 km/h and at or below 10 °C; otherwise the air temperature is used.</div>';
+    ref.innerHTML = '<strong>Cold chart basis:</strong> NWS/North American wind-chill equation; risk bands and exposed-skin freezing-time guidance from Environment Canada. ' +
+      '<a href="https://www.weather.gov/safety/cold-wind-chill-chart" target="_blank" rel="noopener">NWS</a> · ' +
+      '<a href="https://www.canada.ca/en/services/environment/weather/severeweather/wind-chill-index.html" target="_blank" rel="noopener">Environment Canada</a>.';
   } else {
     desc.innerHTML = '<strong>Green = Safe &nbsp;&nbsp; | &nbsp;&nbsp; Yellow = Caution &nbsp;&nbsp; | &nbsp;&nbsp; Red = Danger</strong>';
+    ref.innerHTML = '<strong>Heat chart basis:</strong> temperature + relative humidity; “feels like” uses the NWS Rothfusz Heat Index regression. The displayed Safe/Caution/Danger background uses this application’s existing boundary curves (local decision-aid classification, not official NWS alert thresholds). For occupational/military exposure limits, WBGT is preferred; Heat Index is a screening tool. ' +
+      '<a href="https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml" target="_blank" rel="noopener">NWS/WPC</a> · ' +
+      '<a href="https://www.cdc.gov/niosh/heat-stress/communication-resources/app.html" target="_blank" rel="noopener">NIOSH</a>.';
   }
 }
 
