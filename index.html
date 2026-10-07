@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>Heat stress decision aid chart — Live</title>
+<title>Heat and cold stress decision aid — Live</title>
 <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 <style>
 :root {
@@ -142,6 +142,13 @@ button {
 }
 
 .hint { font-size: 12px; color: #444; margin-top: 6px; }
+
+.chart-mode-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; margin: 0 0 8px; font-size: 13px; }
+.chart-mode-bar label { font-weight: 700; }
+.chart-mode-bar select { width: auto; min-width: 210px; padding: 6px 8px; font-size: 14px; }
+.chart-mode-note { color: #555; }
+.zone-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: 12px; margin: 3px 3px;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
 .status-bar {
   display: flex;
@@ -287,6 +294,8 @@ button {
     align-items: flex-start;
     font-size: 13px;
   }
+  /* When the bar stacks vertically, flex-basis 560px would become a height. */
+  .status-main { flex: 0 0 auto; align-self: stretch; }
 
   #plot {
     height: 62vh;
@@ -312,7 +321,7 @@ button {
 
 @media print {
   body { background: white; }
-  .controls, .hint, .status-bar { display: none !important; }
+  .controls, .hint, .status-bar, .chart-mode-bar { display: none !important; }
   .zone-desc, .source-note { display: block !important; margin-top: 20px; text-align: center; }
   .wrap { max-width: none; padding: 0; }
   .print-heading { display: block !important; }
@@ -325,7 +334,7 @@ button {
 <div class="wrap">
 
 <div class="print-heading">
-  <div class="line1">Heat stress decision aid chart</div>
+  <div class="line1" id="printTitle">Heat stress decision aid chart</div>
   <div id="date-range" style="font-size: 16px; margin-top: 8px; color: #333; font-weight: bold;"></div>
 </div>
 
@@ -369,6 +378,7 @@ button {
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <input type="text" id="manualTemp" placeholder="Temperature °C e.g. 34.5" style="flex:1; min-width:120px;">
         <input type="text" id="manualRh" placeholder="Humidity % e.g. 55" style="flex:1; min-width:120px;">
+        <input type="text" id="manualWind" placeholder="Wind km/h (for cold) e.g. 20" style="flex:1; min-width:120px;">
       </div>
     </div>
 
@@ -404,13 +414,23 @@ button {
   <button class="primary" onclick="fetchAndPlot()">Refresh Now</button>
   <button class="secondary" onclick="window.print()">Print / Save PDF</button>
   <button class="tertiary" onclick="clearHistory()">Clear Today's Points</button>
-  <button class="quaternary" onclick="openAdvisory()">Heat Safety Advice</button>
+  <button class="quaternary" id="adviceButton" onclick="openAdvisory()">Heat Safety Advice</button>
   <button class="quaternary" id="aqiAdviceButton" type="button" onclick="openAQIAdvisory()" disabled>AQI Health Advisory</button>
+</div>
+
+<div class="chart-mode-bar">
+  <label for="chartMode">Chart view</label>
+  <select id="chartMode" onchange="onChartModeChange()">
+    <option value="auto" selected>Automatic (by temperature)</option>
+    <option value="heat">Heat stress chart</option>
+    <option value="cold">Cold stress chart</option>
+  </select>
+  <span class="chart-mode-note" id="chartModeNote"></span>
 </div>
 
 <div id="plot"></div>
 
-<div class="zone-desc" style="margin-top: 20px; font-size: 15px; text-align: center; color: #333;">
+<div class="zone-desc" id="zoneDesc" style="margin-top: 20px; font-size: 15px; text-align: center; color: #333;">
   <strong>Green = Safe &nbsp;&nbsp; | &nbsp;&nbsp; Yellow = Caution &nbsp;&nbsp; | &nbsp;&nbsp; Red = Danger</strong>
 </div>
 
@@ -494,6 +514,105 @@ function feelsLikeC(tempC, rh) {
   }
 
   return (hiF - 32) * 5 / 9;
+}
+
+// ================== Cold stress (wind chill) ==================
+// Wind chill uses the standard North American formula (US National Weather Service /
+// Environment Canada). It applies only at or below 10 °C with wind above 4.8 km/h;
+// otherwise the air temperature itself is used.
+// The risk bands follow the Environment Canada wind-chill scale, which is a civil
+// scale. If AFMS or high-altitude cold-injury thresholds are issued, change the
+// "above" values in COLD_BANDS (a band applies while feels-like °C is above it).
+const AUTO_COLD_BELOW_C = 20; // in Automatic chart view, readings below this use the cold chart
+
+function chillApplies(tempC, windKmh) {
+  return Number.isFinite(windKmh) && tempC <= 10 && windKmh > 4.8;
+}
+
+function windChillC(tempC, windKmh) {
+  if (!chillApplies(tempC, windKmh)) return tempC;
+  const v = Math.pow(windKmh, 0.16);
+  return 13.12 + 0.6215 * tempC - 11.37 * v + 0.3965 * tempC * v;
+}
+
+const COLD_BANDS = [
+  { name: 'Minimal', range: '> 0 °C', above: 0, color: '#4CAF50', textColor: '#fff',
+    summary: 'Little cold-injury risk from wind chill at this temperature.',
+    actions: [
+      'Dress for the conditions and carry a spare layer if activity will be prolonged.',
+      'Keep clothing dry; wet clothing loses its insulation.',
+      'Keep drinking fluids; thirst is easy to miss in the cold.'
+    ] },
+  { name: 'Low', range: '0 to −9 °C', above: -10, color: '#90CAF9', textColor: '#111',
+    summary: 'A slight increase in discomfort. Basic cold precautions are enough.',
+    actions: [
+      'Wear layers and cover the head and hands.',
+      'Keep clothing and footwear dry.',
+      'Have warm drinks available.'
+    ] },
+  { name: 'Moderate', range: '−10 to −27 °C', above: -28, color: '#42A5F5', textColor: '#111',
+    summary: 'Uncomfortable. Prolonged exposure risks hypothermia.',
+    actions: [
+      'Wear a windproof outer layer, insulated gloves and a cap or balaclava.',
+      'Limit time spent standing still; take warm-up breaks.',
+      'Provide warm drinks and food.',
+      'Watch for early signs such as shivering.'
+    ] },
+  { name: 'High', range: '−28 to −39 °C', above: -40, color: '#3949AB', textColor: '#fff',
+    summary: 'Frostbite possible: exposed skin can freeze in about 10 to 30 minutes.',
+    actions: [
+      'Cover all exposed skin.',
+      'Work in pairs and check each other\u2019s face and extremities for numbness or white or grey patches.',
+      'Limit outdoor tasks and schedule regular warm-up breaks.',
+      'Keep clothing and footwear dry and change wet items promptly.',
+      'Avoid touching bare metal with bare skin.'
+    ] },
+  { name: 'Very high', range: '−40 to −47 °C', above: -48, color: '#7B1FA2', textColor: '#fff',
+    summary: 'Frostbite is likely on exposed skin within about 5 to 10 minutes.',
+    actions: [
+      'Restrict outdoor activity to essential tasks of short duration.',
+      'Use a buddy system with frequent checks; keep warm shelter close by.',
+      'Wear full cold-weather clothing with no bare skin.'
+    ] },
+  { name: 'Severe', range: '−48 to −54 °C', above: -55, color: '#4A148C', textColor: '#fff',
+    summary: 'Exposed skin can freeze in about 2 to 5 minutes.',
+    actions: [
+      'Avoid outdoor exposure except for essential tasks.',
+      'For essential tasks, use full protection, a buddy and a way to communicate.',
+      'Stay close to shelter and watch constantly for frostbite and hypothermia.'
+    ] },
+  { name: 'Extreme', range: '≤ −55 °C', above: -Infinity, color: '#1A0033', textColor: '#fff',
+    summary: 'Exposed skin can freeze in under 2 minutes. Outdoor conditions are hazardous.',
+    actions: [
+      'Stay in shelter.',
+      'Go outside only for critical tasks, with full protection, a buddy and a way to call for help.',
+      'Return to shelter at the first sign of numbness.'
+    ] }
+];
+
+const COLD_WARNING_SIGNS = {
+  hypothermia: ['Intense shivering, or shivering that stops', 'Slurred speech, clumsiness or stumbling', 'Drowsiness or confusion', 'Cold, pale skin and slow breathing'],
+  frostbite: ['Numbness or tingling in fingers, toes, nose or ears', 'Skin that looks white, grey or waxy', 'Skin that feels hard or stiff']
+};
+
+function coldZoneIndex(effC) {
+  for (let i = 0; i < COLD_BANDS.length; i++) {
+    if (effC > COLD_BANDS[i].above) return i;
+  }
+  return COLD_BANDS.length - 1;
+}
+
+function coldZone(tempC, windKmh) {
+  return COLD_BANDS[coldZoneIndex(windChillC(tempC, windKmh))].name;
+}
+
+// Which chart is showing: the user's choice, or in Automatic the cold chart when the
+// latest reading is below AUTO_COLD_BELOW_C (the heat chart cannot plot below 20 °C).
+function currentChartMode(history) {
+  const choice = document.getElementById('chartMode').value;
+  if (choice === 'heat' || choice === 'cold') return choice;
+  const last = history && history.length ? history[history.length - 1] : null;
+  return last && last.temp_c < AUTO_COLD_BELOW_C ? 'cold' : 'heat';
 }
 
 // ================== Air Quality Index (Indian National AQI, CPCB) ==================
@@ -795,6 +914,8 @@ const HEAT_WARNING_SIGNS = {
 };
 
 function openAdvisory() {
+  if (currentChartMode(lastHistory) === 'cold') { openColdAdvisory(); return; }
+  document.getElementById('advisoryTitle').textContent = 'Heat Safety Advice';
   const body = document.getElementById('advisoryBody');
   let html = '';
 
@@ -813,6 +934,35 @@ function openAdvisory() {
   html += `<h3>Watch for — Heat Exhaustion</h3><ul>${HEAT_WARNING_SIGNS.exhaustion.map(s => `<li>${s}</li>`).join('')}</ul>`;
   html += `<h3>Watch for — Heat Stroke (medical emergency)</h3><ul>${HEAT_WARNING_SIGNS.stroke.map(s => `<li>${s}</li>`).join('')}</ul>`;
   html += `<div class="advisory-emergency">Heat stroke is a medical emergency. Call your local emergency number immediately, move the person to a cooler place and cool them with water, wet cloths or ice packs while help arrives. Do not give drinks to someone who is confused or unconscious.</div>`;
+
+  body.innerHTML = html;
+  document.getElementById('advisoryModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function openColdAdvisory() {
+  document.getElementById('advisoryTitle').textContent = 'Cold Safety Advice';
+  const body = document.getElementById('advisoryBody');
+  let html = '';
+  const last = lastHistory.length ? lastHistory[lastHistory.length - 1] : null;
+
+  if (!last) {
+    html += '<p>No reading has been taken yet on this page. Click "Refresh Now" first for a current assessment — general guidance is shown below in the meantime.</p>';
+  } else if (!Number.isFinite(last.wind_kmh)) {
+    html += `<p>The latest reading (${last.temp_c}°C) has no wind speed, so wind chill cannot be assessed. Use a data source that reports wind, or add a wind speed to a manual reading. General guidance is shown below.</p>`;
+  } else {
+    const chill = Math.round(windChillC(last.temp_c, last.wind_kmh) * 10) / 10;
+    const band = COLD_BANDS[coldZoneIndex(chill)];
+    html += `<div class="advisory-zone" style="background:${band.color}; color:${band.textColor};">
+      <strong>Current cold stress zone: ${band.name}</strong> (${last.temp_c}°C, wind ${last.wind_kmh} km/h, feels like ${chill}°C)<br>${band.summary}
+    </div>`;
+    html += '<h3>Recommended actions</h3><ul>' + band.actions.map(a => `<li>${a}</li>`).join('') + '</ul>';
+  }
+
+  html += `<h3>Watch for — Hypothermia</h3><ul>${COLD_WARNING_SIGNS.hypothermia.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  html += `<h3>Watch for — Frostbite</h3><ul>${COLD_WARNING_SIGNS.frostbite.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  html += `<div class="advisory-emergency">For suspected hypothermia, move the person to shelter, remove wet clothing, insulate and warm them gradually, give warm sweet drinks only if fully alert, and get medical help urgently. For frostbite, do not rub the skin or apply direct heat; protect the area and seek medical care.</div>`;
+  html += `<p class="hint">Risk bands follow the civil wind-chill scale and the freezing times are approximate for exposed skin. They do not account for wet clothing, workload, altitude or acclimatisation. Use alongside unit cold-injury procedures and medical judgement.</p>`;
 
   body.innerHTML = html;
   document.getElementById('advisoryModal').classList.remove('hidden');
@@ -1162,7 +1312,7 @@ document.getElementById('clearLocationSearch').addEventListener('click', () => {
 async function fetchOpenMeteo(lat, lon, targetDate) {
   // Live mode (unchanged from before) — exact current reading.
   if (!targetDate) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m&timezone=auto`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Open-Meteo request failed (' + res.status + ')');
     const d = await res.json();
@@ -1170,6 +1320,8 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
     return {
       temp_c: d.current.temperature_2m,
       rh: d.current.relative_humidity_2m,
+      wind_kmh: Number.isFinite(d.current.wind_speed_10m) ? d.current.wind_speed_10m : null,
+      gust_kmh: Number.isFinite(d.current.wind_gusts_10m) ? d.current.wind_gusts_10m : null,
       time: new Date()
     };
   }
@@ -1181,7 +1333,7 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
   const isPast = dateStr < todayStr;
 
   async function queryEndpoint(base) {
-    const url = `${base}?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relative_humidity_2m&start_date=${dateStr}&end_date=${dateStr}&timezone=auto`;
+    const url = `${base}?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m&start_date=${dateStr}&end_date=${dateStr}&timezone=auto`;
     const res = await fetch(url);
     if (!res.ok) return null;
     const d = await res.json();
@@ -1191,7 +1343,8 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
     const temp = d.hourly.temperature_2m[idx];
     const rh = d.hourly.relative_humidity_2m[idx];
     if (temp === undefined || temp === null || rh === undefined || rh === null) return null;
-    return { temp_c: temp, rh: rh };
+    const wind = d.hourly.wind_speed_10m ? d.hourly.wind_speed_10m[idx] : null;
+    return { temp_c: temp, rh: rh, wind_kmh: Number.isFinite(wind) ? wind : null };
   }
 
   let result = null;
@@ -1212,6 +1365,7 @@ async function fetchOpenMeteo(lat, lon, targetDate) {
   return {
     temp_c: result.temp_c,
     rh: result.rh,
+    wind_kmh: result.wind_kmh,
     time: new Date(targetDate)
   };
 }
@@ -1235,9 +1389,15 @@ async function fetchAmbient(workerUrl, targetDate) {
   if (d.temp_c === undefined || d.rh === undefined) {
     throw new Error('Proxy response missing temp_c/rh. Check the worker is deployed and secrets are set.');
   }
+  const num = (v) => (Number.isFinite(v) ? v : null);
   return {
     temp_c: d.temp_c,
     rh: d.rh,
+    // Present only once the updated worker is deployed; null otherwise.
+    wind_kmh: num(d.wind_kmh),
+    gust_kmh: num(d.gust_kmh),
+    uv: num(d.uv),
+    pressure_hpa: num(d.pressure_hpa),
     time: d.observed_at ? new Date(d.observed_at) : (targetDate || new Date())
   };
 }
@@ -1297,7 +1457,14 @@ async function fetchAndPlot() {
       const rh = parseFloat(document.getElementById('manualRh').value);
       if (isNaN(temp) || isNaN(rh)) throw new Error('Enter both a temperature (°C) and a humidity (%) value.');
       if (rh < 0 || rh > 100) throw new Error('Humidity must be between 0 and 100%.');
-      reading = { temp_c: temp, rh: rh, time: targetDateTime || new Date() };
+      // Wind is optional; it is needed only for the cold stress chart.
+      const windRaw = document.getElementById('manualWind').value.trim();
+      let wind = null;
+      if (windRaw !== '') {
+        wind = parseFloat(windRaw);
+        if (!Number.isFinite(wind) || wind < 0 || wind > 300) throw new Error('Wind speed must be a number between 0 and 300 km/h.');
+      }
+      reading = { temp_c: temp, rh: rh, wind_kmh: wind, time: targetDateTime || new Date() };
       locationLabel = 'Manually entered reading';
       // No coordinates associated with a manually typed reading, so AQI stays unavailable.
     } else {
@@ -1317,6 +1484,7 @@ async function fetchAndPlot() {
       temp_c: Math.round(reading.temp_c * 10) / 10,
       rh: Math.round(reading.rh * 10) / 10,
       feels_c: feels_c,
+      wind_kmh: Number.isFinite(reading.wind_kmh) ? Math.round(reading.wind_kmh * 10) / 10 : null,
       location: locationLabel
     });
     saveHistory(history);
@@ -1328,7 +1496,23 @@ async function fetchAndPlot() {
     } else {
       prefix = source === 'manualdata' ? 'Recorded' : 'Live';
     }
-    setStatus(`${prefix} — ${locationLabel}: At ${reading.temp_c.toFixed(1)}°C and ${reading.rh.toFixed(0)}% relative humidity, it feels like ${feels_c.toFixed(1)}°C. Heat stress zone: ${heatZone(reading.temp_c, reading.rh)}.`, false);
+    const wind = reading.wind_kmh;
+    const gustText = Number.isFinite(reading.gust_kmh) ? `, gusting ${reading.gust_kmh.toFixed(0)} km/h` : '';
+    let statusMessage;
+    if (currentChartMode(history) === 'cold') {
+      if (Number.isFinite(wind)) {
+        const chillNote = chillApplies(reading.temp_c, wind)
+          ? `it feels like ${windChillC(reading.temp_c, wind).toFixed(1)}°C with wind chill`
+          : 'wind chill does not apply at this temperature and wind speed';
+        statusMessage = `${prefix} — ${locationLabel}: At ${reading.temp_c.toFixed(1)}°C with wind ${wind.toFixed(0)} km/h${gustText}, ${chillNote}. Cold stress zone: ${coldZone(reading.temp_c, wind)}.`;
+      } else {
+        statusMessage = `${prefix} — ${locationLabel}: At ${reading.temp_c.toFixed(1)}°C. Wind speed is not available for this source, so wind chill cannot be assessed.`;
+      }
+    } else {
+      const windText = Number.isFinite(wind) ? ` Wind ${wind.toFixed(0)} km/h${gustText}.` : '';
+      statusMessage = `${prefix} — ${locationLabel}: At ${reading.temp_c.toFixed(1)}°C and ${reading.rh.toFixed(0)}% relative humidity, it feels like ${feels_c.toFixed(1)}°C. Heat stress zone: ${heatZone(reading.temp_c, reading.rh)}.${windText}`;
+    }
+    setStatus(statusMessage, false);
     document.getElementById('lastUpdated').textContent = 'Last updated: ' + reading.time.toLocaleString();
 
     // AQI is additional context — fetched separately so a failure here never
@@ -1368,14 +1552,60 @@ function isMobile() {
 // ================== Plotly rendering ==================
 let lastHistory = [];
 
+function onChartModeChange() {
+  renderPlot(lastHistory);
+}
+
+// Cold chart background: wind speed (x) against air temperature (y), shaded by the
+// feels-like (wind chill) risk band at every point of a fine grid.
+function buildColdBackground() {
+  const winds = [];
+  const temps = [];
+  for (let w = 0; w <= 100; w += 0.5) winds.push(w);
+  for (let t = -50; t <= 20; t += 0.25) temps.push(t);
+  const z = temps.map(t => winds.map(w => coldZoneIndex(windChillC(t, w))));
+  const n = COLD_BANDS.length;
+  const span = n - 1;
+  const colorscale = [];
+  for (let i = 0; i < n; i++) {
+    const lo = i === 0 ? 0 : (i - 0.5) / span;
+    const hi = i === n - 1 ? 1 : (i + 0.5) / span;
+    colorscale.push([lo, COLD_BANDS[i].color], [hi, COLD_BANDS[i].color]);
+  }
+  return [{ type: 'heatmap', x: winds, y: temps, z, zmin: 0, zmax: span, colorscale,
+            showscale: false, hoverinfo: 'skip', zsmooth: false }];
+}
+
+// Text that changes with the chart: print title, legend line, advice button and note.
+function applyModeUI(mode) {
+  const cold = mode === 'cold';
+  const choice = document.getElementById('chartMode').value;
+  document.getElementById('printTitle').textContent = cold ? 'Cold stress decision aid chart' : 'Heat stress decision aid chart';
+  document.getElementById('adviceButton').textContent = cold ? 'Cold Safety Advice' : 'Heat Safety Advice';
+  document.getElementById('chartModeNote').textContent =
+    (cold ? 'Showing the cold stress chart' : 'Showing the heat stress chart') +
+    (choice === 'auto' ? ` (automatic: below ${AUTO_COLD_BELOW_C} °C uses the cold chart)` : '');
+  const desc = document.getElementById('zoneDesc');
+  if (cold) {
+    desc.innerHTML = '<div style="margin-bottom:4px;"><strong>Feels-like (wind chill) risk bands</strong></div>' +
+      COLD_BANDS.map(b => `<span class="zone-chip" style="background:${b.color}; color:${b.textColor};">${b.name}: ${b.range}</span>`).join('') +
+      '<div style="margin-top:4px; font-size:12px; color:#555;">Wind chill is calculated only above 4.8 km/h and at or below 10 °C; otherwise the air temperature is used.</div>';
+  } else {
+    desc.innerHTML = '<strong>Green = Safe &nbsp;&nbsp; | &nbsp;&nbsp; Yellow = Caution &nbsp;&nbsp; | &nbsp;&nbsp; Red = Danger</strong>';
+  }
+}
+
 function renderPlot(history) {
   lastHistory = history || [];
-  const traces = buildBackground();
+  const mode = currentChartMode(lastHistory);
+  const cold = mode === 'cold';
+  applyModeUI(mode);
+  const traces = cold ? buildColdBackground() : buildBackground();
   const dateDisplay = document.getElementById('date-range');
 
   if (!history || history.length === 0) {
     dateDisplay.textContent = 'No data yet';
-    Plotly.newPlot('plot', traces, baseLayout(), plotConfig());
+    Plotly.newPlot('plot', traces, baseLayout(mode), plotConfig());
     return;
   }
 
@@ -1388,35 +1618,53 @@ function renderPlot(history) {
   const mobile = isMobile();
 
   history.forEach((r, i) => {
+    if (cold && !Number.isFinite(r.wind_kmh)) return; // the cold chart needs a wind speed
     const t = new Date(r.iso);
-    const zone = heatZone(r.temp_c, r.rh);
     const isLatest = i === history.length - 1;
     const label = `${formatDMY(t)} ${formatHM(t)}`;
-    // Calculate values for older stored points that predate this feature.
-    const feels = r.feels_c !== undefined
-      ? r.feels_c
-      : Math.round(feelsLikeC(r.temp_c, r.rh) * 10) / 10;
+    let x, y, nameText, hoverText;
+
+    if (cold) {
+      const chill = Math.round(windChillC(r.temp_c, r.wind_kmh) * 10) / 10;
+      const zone = coldZone(r.temp_c, r.wind_kmh);
+      x = r.wind_kmh;
+      y = r.temp_c;
+      nameText = `${label} (${r.temp_c}°C, wind ${r.wind_kmh} km/h, feels ${chill}°C) - ${zone}`;
+      hoverText = `Date: ${label}<br>Location: ${r.location}<br>Temp: ${r.temp_c}°C<br>Wind: ${r.wind_kmh} km/h<br>Feels like (wind chill): ${chill}°C<br>Cold stress zone: ${zone}<extra></extra>`;
+    } else {
+      const zone = heatZone(r.temp_c, r.rh);
+      // Calculate values for older stored points that predate this feature.
+      const feels = r.feels_c !== undefined
+        ? r.feels_c
+        : Math.round(feelsLikeC(r.temp_c, r.rh) * 10) / 10;
+      x = r.rh;
+      y = r.temp_c;
+      nameText = `${label} (${r.temp_c}°C, feels ${feels}°C, ${r.rh}%) - ${zone}`;
+      hoverText = `Date: ${label}<br>Location: ${r.location}<br>Temp: ${r.temp_c}°C<br>Feels like: ${feels}°C<br>RH: ${r.rh}%<br>Zone: ${zone}<extra></extra>`;
+    }
 
     traces.push({
-      x: [r.rh],
-      y: [r.temp_c],
+      x: [x],
+      y: [y],
       type: 'scatter',
-      mode: mobile ? 'markers' : 'markers+text', // hide inline text labels on mobile to reduce clutter; still visible on hover/tap
-      name: `${label} (${r.temp_c}°C, feels ${feels}°C, ${r.rh}%) - ${zone}`,
+      // Inline labels are skipped on mobile, and on the cold chart where the dark
+      // bands would hide black text; the legend and tooltip carry the details.
+      mode: (mobile || cold) ? 'markers' : 'markers+text',
+      name: nameText,
       text: [isLatest ? label + ' ★' : label],
       textposition: 'top center',
       textfont: {color:'#000', size: isLatest ? 13 : 11},
       marker: {
         size: isLatest ? (mobile ? 16 : 18) : (mobile ? 10 : 12),
         symbol: symbolFor(i),
-        color: '#000',
-        line: {width: isLatest ? 2.5 : 1.5, color:'#fff'}
+        color: cold ? '#fff' : '#000',
+        line: {width: isLatest ? 2.5 : 1.5, color: cold ? '#000' : '#fff'}
       },
-      hovertemplate: `Date: ${label}<br>Location: ${r.location}<br>Temp: ${r.temp_c}°C<br>Feels like: ${feels}°C<br>RH: ${r.rh}%<br>Zone: ${zone}<extra></extra>`
+      hovertemplate: hoverText
     });
   });
 
-  Plotly.newPlot('plot', traces, baseLayout(), plotConfig());
+  Plotly.newPlot('plot', traces, baseLayout(mode), plotConfig());
 }
 
 function plotConfig() {
@@ -1431,27 +1679,32 @@ function plotConfig() {
   };
 }
 
-function baseLayout() {
+function baseLayout(mode = 'heat') {
   const mobile = isMobile();
+  const cold = mode === 'cold';
+  // On the cold chart the bands are opaque, so grid lines are drawn above them in white.
+  const grid = cold ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.15)';
 
   return {
     paper_bgcolor: 'white',
     plot_bgcolor: 'white',
     dragmode: false,        // disables box-zoom / drag-to-zoom on the plot area
     xaxis: {
-      title: {text: '<b>Relative Humidity (%)</b>', font:{size: mobile ? 13 : 20}},
-      range: [10, 100],
+      title: {text: cold ? '<b>Wind speed (km/h)</b>' : '<b>Relative Humidity (%)</b>', font:{size: mobile ? 13 : 20}},
+      range: cold ? [0, 100] : [10, 100],
       fixedrange: true,     // locks this axis so it cannot be zoomed or panned
       dtick: 10,
-      gridcolor: 'rgba(0,0,0,0.15)',
+      gridcolor: grid,
+      layer: cold ? 'above traces' : 'below traces',
       tickfont: {size: mobile ? 10 : 12}
     },
     yaxis: {
       title: {text: '<b>Temperature (°C)</b>', font:{size: mobile ? 13 : 20}},
-      range: [20, 42.5],
+      range: cold ? [-50, 20] : [20, 42.5],
       fixedrange: true,     // locks this axis so it cannot be zoomed or panned
-      dtick: mobile ? 2 : 0.5,
-      gridcolor: 'rgba(0,0,0,0.15)',
+      dtick: cold ? (mobile ? 10 : 5) : (mobile ? 2 : 0.5),
+      gridcolor: grid,
+      layer: cold ? 'above traces' : 'below traces',
       tickfont: {size: mobile ? 10 : 12}
     },
     // On mobile: legend moves below the chart, horizontal, wrapping — a right-side
