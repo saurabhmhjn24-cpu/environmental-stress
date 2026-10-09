@@ -538,6 +538,13 @@ html[lang="hi"] .options-bar .hamburger-toggle{height:44px;min-height:44px}
 .header-controls .options-bar{margin:0;flex:0 0 auto}
 .app-header .dashboard-menu-list button{max-width:none}
 @media(max-width:760px){.header-controls{width:100%;justify-content:space-between}.header-controls .language-control{min-width:0}.header-controls .language-control select{width:auto;min-width:105px}}
+
+/* Keep the readings and their actions within one information card. */
+.status-bar{flex-wrap:wrap}
+.status-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:1 0 100%;width:100%;border-top:1px solid var(--border);padding-top:12px}
+.status-footer .status-actions{margin:0;flex-shrink:0}
+@media(max-width:760px){.status-footer{flex-direction:column;align-items:stretch;gap:10px}.status-footer .status-actions{width:100%}.status-footer .status-actions button{min-height:44px}}
+@media print{.status-footer{border:0;padding:0}}
 </style>
 </head>
 <body>
@@ -633,9 +640,9 @@ html[lang="hi"] .options-bar .hamburger-toggle{height:44px;min-height:44px}
 <div class="live-metrics" id="liveMetrics"></div><div><span class="dot"></span><span id="statusText">Ready</span></div>
 <div class="status-aqi-row"><span aria-live="polite" class="status-aqi" id="stressValue">Stress —</span><span class="status-aqi-label">Air quality</span><span aria-live="polite" class="status-aqi" id="aqiValue">AQI —</span></div>
 </div>
-<div id="lastUpdated">—</div>
-</div>
-<div class="action-toolbar"><button class="primary" onclick="fetchAndPlot()">Refresh Now</button><button class="primary" onclick="openRecommendedActions()">Recommended actions</button></div><div class="chart-mode-bar">
+<div class="status-footer"><div id="lastUpdated">—</div>
+<div class="action-toolbar status-actions"><button class="primary" onclick="fetchAndPlot()">Refresh Now</button><button class="primary" onclick="openRecommendedActions()">Recommended actions</button></div></div>
+</div><div class="chart-mode-bar">
 <label for="chartMode">Chart view</label>
 <select id="chartMode" onchange="onChartModeChange()">
 <option selected="" value="auto">Automatic (by temperature)</option>
@@ -862,7 +869,7 @@ function renderLiveDashboard(mode) {
   if (mode === 'cold') { coldA = coldAssessment(r); feel = coldA.windKnown ? coldA.chill : null; }
   else if (finite(r.rh)) feel = feelsLikeC(r.temp_c, r.rh);
  }
- const metrics = [['Temperature',r.temp_c,'°C'],['Feels like',feel,'°C'],['Humidity',r.rh,'%'],['Wind',r.wind_kmh,' km/h']];
+ const metrics = [['Temperature',r.temp_c,'°C'],['Feels like',feel,'°C'],['Humidity',r.rh,'%'],['Wind',r.wind_kmh,' km/h'],['UV Index',r.uv,'']];
  const target = document.getElementById('liveMetrics'); target.replaceChildren();
  for (const [label,value,unit] of metrics) {
   const el=document.createElement('div'); el.className='metric';
