@@ -638,18 +638,6 @@ table.ha-table td:first-child{white-space:normal;font-weight:700}
 @media(max-width:760px){.ac-opt{min-height:44px;padding:10px 6px;align-items:center}.ac-opt input{width:22px;height:22px;margin:0}.ac-actions button{flex:1 1 100%}}
 .ac-pre{white-space:pre-wrap;font-size:12px;background:#f2f7f7;border:1px solid #dbe5e8;border-radius:8px;padding:8px;text-indent:0;text-align:left;user-select:all}
 </style>
-<style id="v10-style">
-.location-suggestions{border-radius:10px;box-shadow:0 8px 24px rgba(20,48,59,.18);overscroll-behavior:contain}
-.location-option{display:block;padding:9px 12px;min-height:48px;text-align:left;text-indent:0}
-.location-option.active,.location-option:hover{background:#e3f1ff}
-.loc-main{display:flex;flex-wrap:wrap;column-gap:8px;line-height:1.3}
-.loc-name{font-weight:700;color:#14303b}
-.loc-qual{color:#33454d}
-.loc-meta{margin-top:2px;font-size:12px;color:#607781}
-.location-note{padding:8px 12px;font-size:12px;color:#607781;border-top:1px solid #eee;background:#fafcfc;text-align:left;text-indent:0}
-.location-empty{padding:10px 12px;text-align:left;text-indent:0}
-#locationSearch{scroll-margin-top:12px}
-</style>
 </head>
 <body>
 <div class="wrap"><header class="app-header"><div class="brand"><svg class="brand-mark" aria-hidden="true" focusable="false" viewBox="0 0 120 140">
@@ -694,9 +682,9 @@ table.ha-table td:first-child{white-space:normal;font-weight:700}
 <div class="location-search-wrap">
 <input aria-autocomplete="list" aria-controls="locationSuggestions" aria-expanded="false" autocomplete="off" id="locationSearch" placeholder="Enter city or location e.g. New Delhi" spellcheck="false" type="search"/>
 <button aria-label="Clear location" class="location-clear" id="clearLocationSearch" title="Clear location" type="button">×</button>
-<div class="location-suggestions hidden" id="locationSuggestions" role="listbox" aria-label="Location suggestions"></div>
+<div class="location-suggestions hidden" id="locationSuggestions" role="listbox"></div>
 </div>
-<div class="hint">Type the first letters of the place name (at least 3), then pick one from the list. Places that share a name are shown with their district and state.</div>
+<div class="hint">Type at least 2 characters, then select a location from the suggestions.</div>
 </div>
 <div class="subfield hidden" id="manualFields">
 <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -851,7 +839,6 @@ Object.assign(HINDI,{"Wind chill chart": "विंड चिल चार्ट
 Object.assign(HINDI,{"Reduce exposure of bare skin and follow the Detailed health advisory; clothing alone does not guarantee protection from frostbite.": "खुली त्वचा का संपर्क कम करें और विस्तृत स्वास्थ्य परामर्श का पालन करें; केवल कपड़े शीतदंश से सुरक्षा की गारंटी नहीं देते।", "Check the wind speed and enter it for a true wind-chill assessment; until then, treat the risk as higher than shown.": "हवा की गति जाँचकर दर्ज करें ताकि विंड चिल का सही आकलन हो सके; तब तक जोखिम को दिखाए गए से अधिक मानें।", "Obtain an AQI reading (refresh with a location, or enter one under Data source) to get air-quality advice.": "वायु गुणवत्ता की सलाह के लिए AQI रीडिंग प्राप्त करें (किसी स्थान के साथ अपडेट करें, या जानकारी के स्रोत में AQI दर्ज करें)।", "These points are general. Individual needs, garment insulation, wetness and activity affect protection; the app does not establish an exact clothing requirement or a safe exposure time.": "ये बिंदु सामान्य हैं। व्यक्तिगत आवश्यकताएँ, कपड़ों की ऊष्मारोधन क्षमता, गीलापन और गतिविधि सुरक्षा को प्रभावित करते हैं; ऐप कपड़ों की सटीक आवश्यकता या सुरक्षित संपर्क-समय निर्धारित नहीं करता।", "Emergency: immediate assisted descent, oxygen, urgent medical care.": "आपात स्थिति: तुरंत सहायता सहित नीचे उतारें, ऑक्सीजन दें, तत्काल चिकित्सा सहायता लें।", "Condition": "स्थिति", "What it is": "यह क्या है", "How it is recognised": "पहचान कैसे करें", "What to do": "क्या करें", "Acute mountain sickness (AMS), mild to moderate": "तीव्र पर्वतीय रोग (AMS), हल्का से मध्यम", "The commonest altitude illness; the body has not yet adjusted to the height.": "सबसे आम ऊँचाई की बीमारी; शरीर अभी ऊँचाई के अनुकूल नहीं हुआ है।", "Headache with nausea or poor appetite, tiredness or dizziness after a recent ascent; Lake Louise score 3–9.": "हाल की चढ़ाई के बाद सिरदर्द के साथ मतली या भूख न लगना, थकान या चक्कर; Lake Louise स्कोर 3–9।", "Stop ascending, rest and recheck; descend if symptoms persist or worsen.": "और ऊपर न चढ़ें, आराम करें और फिर जाँचें; लक्षण बने रहें या बढ़ें तो नीचे उतरें।", "AMS, severe": "AMS, गंभीर", "AMS that disables the person or is getting worse; it may be turning into HACE or HAPE.": "AMS जो व्यक्ति को अक्षम कर दे या बढ़ रहा हो; यह HACE या HAPE में बदल सकता है।", "Lake Louise score 10–12, or symptoms that prevent normal activity.": "Lake Louise स्कोर 10–12, या ऐसे लक्षण जो सामान्य गतिविधि रोक दें।", "Descend; seek medical help urgently.": "नीचे उतरें; तुरंत चिकित्सा सहायता लें।", "High-altitude cerebral oedema (HACE)": "उच्च-ऊँचाई मस्तिष्क शोफ (HACE)", "Swelling of the brain; a life-threatening, end-stage form of AMS.": "मस्तिष्क में सूजन; AMS का जानलेवा, अंतिम चरण का रूप।", "Loss of balance or coordination (ataxia) and/or confusion or odd behaviour, often after AMS symptoms.": "संतुलन या समन्वय की हानि (गतिभंग) और/या भ्रम या असामान्य व्यवहार, अक्सर AMS के लक्षणों के बाद।", "High-altitude pulmonary oedema (HAPE)": "उच्च-ऊँचाई फुफ्फुस शोफ (HAPE)", "Fluid in the lungs; a life-threatening condition that can occur with or without AMS.": "फेफड़ों में तरल भर जाना; जानलेवा स्थिति जो AMS के साथ या उसके बिना भी हो सकती है।", "Breathlessness at rest, cough, chest tightness and unusual tiredness; frothy sputum or blue lips in severe cases.": "आराम की स्थिति में साँस फूलना, खाँसी, सीने में जकड़न और असामान्य थकान; गंभीर मामलों में झागदार बलगम या नीले होंठ।", "Symptom": "लक्षण", "Headache": "सिरदर्द", "No headache": "सिरदर्द नहीं", "Mild headache": "हल्का सिरदर्द", "Moderate headache": "मध्यम सिरदर्द", "Severe headache, incapacitating": "गंभीर सिरदर्द, अक्षम करने वाला", "Gastrointestinal symptoms": "पेट/आँत के लक्षण", "Good appetite": "भूख अच्छी", "Poor appetite or nausea": "भूख कम या मतली", "Moderate nausea or vomiting": "मध्यम मतली या उल्टी", "Severe nausea and vomiting, incapacitating": "गंभीर मतली और उल्टी, अक्षम करने वाली", "Fatigue or weakness": "थकान या कमज़ोरी", "Not tired or weak": "थकान या कमज़ोरी नहीं", "Mild fatigue or weakness": "हल्की थकान या कमज़ोरी", "Moderate fatigue or weakness": "मध्यम थकान या कमज़ोरी", "Severe fatigue or weakness, incapacitating": "गंभीर थकान या कमज़ोरी, अक्षम करने वाली", "Dizziness or light-headedness": "चक्कर या सिर हल्का लगना", "No dizziness": "चक्कर नहीं", "Mild dizziness": "हल्का चक्कर", "Moderate dizziness": "मध्यम चक्कर", "Severe dizziness, incapacitating": "गंभीर चक्कर, अक्षम करने वाला", "Altitude illness: AMS, HACE and HAPE": "ऊँचाई की बीमारी: AMS, HACE और HAPE", "Altitude illness is caused by too little oxygen after a recent gain in altitude. It ranges from mild acute mountain sickness (AMS) to life-threatening high-altitude cerebral oedema (HACE) and high-altitude pulmonary oedema (HAPE), which can occur together or separately. It usually occurs above about 2,500 m; treat compatible symptoms as altitude illness until proved otherwise.": "ऊँचाई की बीमारी ऊँचाई में हाल की वृद्धि के बाद ऑक्सीजन की कमी से होती है। यह हल्के तीव्र पर्वतीय रोग (AMS) से लेकर जानलेवा उच्च-ऊँचाई मस्तिष्क शोफ (HACE) और उच्च-ऊँचाई फुफ्फुस शोफ (HAPE) तक हो सकती है, जो साथ-साथ या अलग-अलग हो सकते हैं। यह आम तौर पर लगभग 2,500 मीटर से ऊपर होती है; मिलते-जुलते लक्षणों को तब तक ऊँचाई की बीमारी मानें जब तक अन्यथा सिद्ध न हो।", "1. Classification": "1. वर्गीकरण", "2. Lake Louise AMS score (2018)": "2. Lake Louise AMS स्कोर (2018)", "Use the score only after a recent gain in altitude. Score each symptom from 0 to 3: none, mild, moderate, severe or incapacitating.": "इसका उपयोग केवल ऊँचाई में हाल की वृद्धि के बाद करें। प्रत्येक लक्षण को 0 से 3 तक अंक दें: कोई नहीं, हल्का, मध्यम, गंभीर या अक्षम करने वाला।", "AMS is present when there has been a recent ascent, the headache score is at least 1 and the total is at least 3 (maximum 12).": "AMS तब माना जाता है जब हाल में चढ़ाई हुई हो, सिरदर्द का अंक कम से कम 1 हो और कुल अंक कम से कम 3 हों (अधिकतम 12)।", "Suggested severity: mild 3–5, moderate 6–9, severe 10–12.": "सुझाई गई गंभीरता: हल्का 3–5, मध्यम 6–9, गंभीर 10–12।", "The score screens for AMS only. It does not replace clinical assessment and does not diagnose HACE or HAPE.": "यह स्कोर केवल AMS की जाँच करता है। यह चिकित्सकीय आकलन का विकल्प नहीं है और HACE या HAPE का निदान नहीं करता।", "Sleep disturbance, scored in the older version, was dropped in 2018 because it reflects the altitude exposure itself more than AMS.": "पुराने संस्करण में गिना जाने वाला नींद का बाधित होना 2018 में हटा दिया गया, क्योंकि यह AMS से अधिक ऊँचाई के संपर्क को दर्शाता है।", "3. Lake Louise criteria for HACE and HAPE": "3. HACE और HAPE के लिए Lake Louise मानदंड", "HACE criteria": "HACE के मानदंड", "After a recent gain in altitude, HACE is present when there is a change in mental status and/or ataxia in a person with AMS, or both a change in mental status and ataxia in a person without AMS.": "ऊँचाई में हाल की वृद्धि के बाद, HACE तब माना जाता है जब AMS वाले व्यक्ति में मानसिक स्थिति में बदलाव और/या गतिभंग (संतुलन-समन्वय की हानि) हो, या AMS के बिना व्यक्ति में मानसिक स्थिति में बदलाव और गतिभंग दोनों हों।", "Ataxia is often the earliest sign. Check balance by asking the person to walk heel-to-toe along a straight line, and note confusion, drowsiness or unusual behaviour.": "गतिभंग अक्सर सबसे पहला संकेत होता है। व्यक्ति से सीधी रेखा पर एड़ी से पंजे तक मिलाकर चलने को कहकर संतुलन जाँचें, और भ्रम, उनींदापन या असामान्य व्यवहार पर ध्यान दें।", "HAPE criteria": "HAPE के मानदंड", "After a recent gain in altitude, HAPE is present when at least two symptoms and at least two signs are found.": "ऊँचाई में हाल की वृद्धि के बाद, HAPE तब माना जाता है जब कम से कम दो लक्षण और कम से कम दो संकेत मिलें।", "Symptoms (at least two)": "लक्षण (कम से कम दो)", "Breathlessness at rest": "आराम की स्थिति में साँस फूलना", "Cough": "खाँसी", "Weakness or reduced exercise performance": "कमज़ोरी या परिश्रम-क्षमता में कमी", "Chest tightness or congestion": "सीने में जकड़न या भारीपन", "Signs (at least two)": "संकेत (कम से कम दो)", "Crackles or wheeze in at least one lung field": "कम से कम एक फेफड़े के क्षेत्र में चरमराहट या घरघराहट", "Central cyanosis (blue lips or tongue)": "केंद्रीय नीलापन (होंठ या जीभ नीले)", "Rapid breathing (tachypnoea)": "तेज़ साँस (टैकीप्निया)", "Rapid pulse (tachycardia)": "तेज़ नाड़ी (टैकीकार्डिया)", "Early warning: breathlessness on exertion out of proportion to companions, a dry cough, reduced performance and slow recovery; later, breathlessness at rest and frothy or pink sputum.": "शुरुआती चेतावनी: साथियों की तुलना में परिश्रम पर असामान्य साँस फूलना, सूखी खाँसी, कार्यक्षमता में कमी और धीमी रिकवरी; बाद में आराम में भी साँस फूलना और झागदार या गुलाबी बलगम।", "HACE and HAPE can occur together, and HAPE can occur without AMS.": "HACE और HAPE एक साथ हो सकते हैं, और HAPE बिना AMS के भी हो सकता है।", "4. First response": "4. तात्कालिक कार्रवाई", "Stop ascending at the first sign of AMS. Do not leave the person alone, and allow no further ascent until all symptoms have gone.": "AMS के पहले संकेत पर और ऊपर चढ़ना बंद करें। व्यक्ति को अकेला न छोड़ें, और सभी लक्षण समाप्त होने तक और ऊपर न जाने दें।", "Mild AMS: rest at the same altitude, keep warm, drink fluids, avoid alcohol and exertion, and reassess regularly. Descend if symptoms persist or worsen.": "हल्का AMS: उसी ऊँचाई पर आराम करें, गर्म रहें, तरल लें, शराब और परिश्रम से बचें, और बार-बार स्थिति जाँचते रहें। लक्षण बने रहें या बढ़ें तो नीचे उतरें।", "Severe AMS, HACE or HAPE: start descent immediately (an assisted or carried descent for HACE and HAPE) and inform the medical officer. Descent is the single best treatment; do not delay it for medicines or to see whether symptoms improve.": "गंभीर AMS, HACE या HAPE: तुरंत नीचे उतरना शुरू करें (HACE और HAPE में सहायता सहित या उठाकर) और चिकित्सा अधिकारी को सूचित करें। नीचे उतरना ही एकमात्र सबसे अच्छा उपचार है; इसे दवाओं के लिए या यह देखने के लिए न टालें कि लक्षण सुधरते हैं या नहीं।", "Give oxygen if available (enough to bring SpO₂ above 90% or relieve symptoms) while arranging descent. If descent is not possible, use a portable hyperbaric chamber if one is available.": "यदि उपलब्ध हो तो नीचे उतरने की व्यवस्था करते समय ऑक्सीजन दें (इतनी कि SpO₂ 90% से ऊपर आए या लक्षण कम हों)। नीचे उतरना संभव न हो तो पोर्टेबल हाइपरबैरिक चैंबर, यदि उपलब्ध हो, उपयोग करें।", "Descent of about 300–1,000 m (1,000–3,300 ft) usually brings improvement; continue until the person is clearly better.": "लगभग 300–1,000 मीटर (1,000–3,300 फुट) नीचे उतरने से आम तौर पर सुधार होता है; तब तक उतरते रहें जब तक व्यक्ति स्पष्ट रूप से बेहतर न हो जाए।", "Medicines such as acetazolamide, dexamethasone or nifedipine are for the medical officer to prescribe in line with service protocol. They supplement descent and never replace it.": "एसिटाज़ोलामाइड, डेक्सामेथासोन या निफ़ेडिपिन जैसी दवाएँ चिकित्सा अधिकारी द्वारा सेवा प्रोटोकॉल के अनुसार दी जानी चाहिए। वे नीचे उतरने की पूरक हैं, उसका विकल्प कभी नहीं।", "5. Returning to altitude": "5. फिर से ऊँचाई पर जाना", "Resume ascent only when all symptoms have completely resolved. After HACE or HAPE, resume only after medical assessment and clearance.": "आगे चढ़ाई तभी दोबारा शुरू करें जब सभी लक्षण पूरी तरह समाप्त हो जाएँ। HACE या HAPE के बाद केवल चिकित्सकीय आकलन और अनुमति के बाद ही शुरू करें।", "Sources: Lake Louise consensus definitions (1991) for HACE and HAPE; the 2018 Lake Louise AMS score; first-response principles from the Wilderness Medical Society 2024 guideline and CDC Yellow Book 2026. This is educational guidance and does not replace medical assessment or service protocols. See References & methods.": "स्रोत: HACE और HAPE के लिए Lake Louise सर्वसम्मति परिभाषाएँ (1991); 2018 का Lake Louise AMS स्कोर; तात्कालिक कार्रवाई के सिद्धांत Wilderness Medical Society 2024 दिशानिर्देश और CDC Yellow Book 2026 से। यह शैक्षिक मार्गदर्शन है और चिकित्सकीय आकलन या सेवा प्रोटोकॉल का विकल्प नहीं है। देखें: संदर्भ और विधियाँ।", "The altitude-illness section uses the Lake Louise consensus definitions of AMS, HACE and HAPE, the 2018 Lake Louise AMS score and the Wilderness Medical Society 2024 guidance on first response.": "ऊँचाई की बीमारी वाला खंड AMS, HACE और HAPE की Lake Louise सर्वसम्मति परिभाषाओं, 2018 के Lake Louise AMS स्कोर और तात्कालिक कार्रवाई पर Wilderness Medical Society 2024 के मार्गदर्शन पर आधारित है।"});
 Object.assign(HINDI,{"Refresh required": "अपडेट आवश्यक", "Source changed · press Refresh Now to load conditions for this source.": "स्रोत बदला गया · इस स्रोत की स्थिति देखने के लिए “अभी अपडेट करें” दबाएँ।", "Press Refresh Now to load the forecast for this source.": "इस स्रोत का पूर्वानुमान देखने के लिए “अभी अपडेट करें” दबाएँ।", "Source: Shakurbasti weather station (measured)": "स्रोत: शकूरबस्ती मौसम केंद्र (मापा गया)", "Source: Open-Meteo (weather model)": "स्रोत: Open-Meteo (मौसम मॉडल)", "Source: User entry": "स्रोत: उपयोगकर्ता द्वारा दर्ज", "Observed:": "अवलोकन का समय:", "Reading valid:": "रीडिंग का समय:", "Entered:": "दर्ज करने का समय:", "Retrieved:": "प्राप्त करने का समय:", "Data sources for this reading": "इस रीडिंग के डेटा स्रोत", "No current reading yet. Press Refresh Now to load one.": "अभी कोई वर्तमान रीडिंग नहीं है। एक लोड करने के लिए “अभी अपडेट करें” दबाएँ।", "Reading item": "रीडिंग का विषय", "Where it comes from": "यह कहाँ से आता है", "Temperature and humidity": "तापमान और आर्द्रता", "Wind (used for wind chill)": "हवा की गति (विंड चिल में प्रयुक्त)", "Air quality (AQI)": "वायु गुणवत्ता (AQI)", "Shakurbasti weather station (measured)": "शकूरबस्ती मौसम केंद्र (मापा गया)", "Open-Meteo weather model": "Open-Meteo मौसम मॉडल", "Entered by the user": "उपयोगकर्ता द्वारा दर्ज", "Shakurbasti weather station sensor": "शकूरबस्ती मौसम केंद्र का सेंसर", "Open-Meteo model (station sensor not reporting)": "Open-Meteo मॉडल (स्टेशन सेंसर से रीडिंग नहीं मिल रही)", "Not available": "उपलब्ध नहीं", "Not entered": "दर्ज नहीं", "Not available for entered values": "दर्ज किए गए मानों के लिए उपलब्ध नहीं", "Not available for this source or time": "इस स्रोत या समय के लिए उपलब्ध नहीं", "Terrain model (Open-Meteo elevation)": "भू-भाग मॉडल (Open-Meteo ऊँचाई)", "CPCB station service": "CPCB स्टेशन सेवा", "Open-Meteo air-quality model (estimated)": "Open-Meteo वायु-गुणवत्ता मॉडल (अनुमानित)", "Not available for this source": "इस स्रोत के लिए उपलब्ध नहीं"});
 Object.assign(HINDI,{"Altitude self-check": "ऊँचाई स्व-जाँच", "Open the altitude self-check": "ऊँचाई स्व-जाँच खोलें", "A quick check for acute altitude illness using the 2018 Lake Louise AMS score and the Lake Louise criteria for HACE and HAPE. It supports, and does not replace, assessment by a medical officer. Nothing you enter is saved or sent anywhere.": "तीव्र ऊँचाई की बीमारी की त्वरित जाँच, 2018 के Lake Louise AMS स्कोर तथा HACE और HAPE के Lake Louise मानदंडों के आधार पर। यह चिकित्सा अधिकारी के आकलन में सहायक है, उसका विकल्प नहीं। आप जो भी दर्ज करेंगे वह कहीं सहेजा या भेजा नहीं जाता।", "If anyone is confused, cannot walk straight or is breathless at rest, do not wait: start descent and call the medical officer.": "यदि कोई व्यक्ति भ्रमित हो, सीधा न चल पाए या आराम में भी साँस फूलती हो, तो प्रतीक्षा न करें: नीचे उतरना शुरू करें और चिकित्सा अधिकारी को बुलाएँ।", "1. Recent ascent": "1. हाल की चढ़ाई", "Have you gained altitude recently (for example, in the last few days)?": "क्या आपने हाल में (जैसे पिछले कुछ दिनों में) ऊँचाई प्राप्त की है?", "Yes — recent gain in altitude": "हाँ — हाल में ऊँचाई बढ़ी है", "No recent gain in altitude": "नहीं — हाल में ऊँचाई नहीं बढ़ी", "Altitude now (metres, optional)": "अभी की ऊँचाई (मीटर, वैकल्पिक)", "2. Lake Louise AMS score": "2. Lake Louise AMS स्कोर", "Choose the option that best describes how you feel now (0 = none).": "वह विकल्प चुनें जो अभी आपकी स्थिति को सबसे अच्छी तरह बताता हो (0 = कुछ नहीं)।", "3. Emergency checks": "3. आपात जाँच", "HACE warning signs (ask a companion to check)": "HACE के चेतावनी संकेत (साथी से जँचवाएँ)", "Confusion, drowsiness or unusual behaviour": "भ्रम, उनींदापन या असामान्य व्यवहार", "Loss of balance or coordination: cannot walk heel-to-toe along a straight line": "संतुलन या समन्वय की हानि: सीधी रेखा पर एड़ी से पंजे तक मिलाकर नहीं चल पाते", "HAPE warning signs": "HAPE के चेतावनी संकेत", "Crackles or wheeze are usually heard by a companion or the medical officer.": "चरमराहट या घरघराहट आम तौर पर साथी या चिकित्सा अधिकारी को सुनाई देती है।", "Answer the questions to see the result.": "परिणाम देखने के लिए प्रश्नों के उत्तर दें।", "First say whether you have gained altitude recently.": "पहले बताएँ कि क्या आपने हाल में ऊँचाई प्राप्त की है।", "Answer all four symptom questions (choose 0 if none).": "चारों लक्षण-प्रश्नों के उत्तर दें (कुछ नहीं हो तो 0 चुनें)।", "This check supports, and never replaces, medical assessment. When in doubt, descend and seek medical help.": "यह जाँच चिकित्सकीय आकलन में सहायक है, उसका विकल्प कभी नहीं। संदेह हो तो नीचे उतरें और चिकित्सा सहायता लें।", "Copy summary for the medical officer": "चिकित्सा अधिकारी के लिए सारांश कॉपी करें", "Start again": "फिर से शुरू करें", "Summary copied.": "सारांश कॉपी हो गया।", "Copying is not available here; select and copy the text below.": "यहाँ कॉपी करना उपलब्ध नहीं है; नीचे का पाठ चुनकर कॉपी करें।", "Lake Louise AMS score": "Lake Louise AMS स्कोर", "AMS (headache plus a total of 3 or more)": "AMS (सिरदर्द के साथ कुल 3 या अधिक अंक)", "HACE criteria": "HACE के मानदंड", "HAPE criteria": "HAPE के मानदंड", "Present — mild (suggested band 3–5)": "उपस्थित — हल्का (सुझाया दायरा 3–5)", "Present — moderate (suggested band 6–9)": "उपस्थित — मध्यम (सुझाया दायरा 6–9)", "Present — severe (suggested band 10–12)": "उपस्थित — गंभीर (सुझाया दायरा 10–12)", "Not present": "उपस्थित नहीं", "Not assessed (no recent ascent)": "आकलन नहीं (हाल में चढ़ाई नहीं)", "Criteria met": "मानदंड पूरे", "Possible features — treat as urgent": "संभावित लक्षण — तत्काल मानें", "Not suggested by your answers": "आपके उत्तरों से संकेत नहीं", "Emergency: start descent now": "आपात स्थिति: अभी नीचे उतरना शुरू करें", "Start descent now, with an escort. For HACE or HAPE use an assisted or carried descent.": "तुरंत किसी साथी के साथ नीचे उतरना शुरू करें। HACE या HAPE में सहायता सहित या उठाकर उतारें।", "Inform the medical officer immediately.": "चिकित्सा अधिकारी को तुरंत सूचित करें।", "Give oxygen if available while arranging descent.": "यदि उपलब्ध हो तो नीचे उतारने की व्यवस्था करते समय ऑक्सीजन दें।", "Do not leave the person alone. Keep warm; avoid exertion, alcohol and sedatives.": "व्यक्ति को अकेला न छोड़ें। गर्म रखें; परिश्रम, शराब और नींद की दवाओं से बचें।", "Do not delay descent for medicines or to see whether symptoms improve.": "दवाओं के लिए या यह देखने के लिए कि लक्षण सुधरते हैं या नहीं, नीचे उतरना न टालें।", "Urgent: medical review needed": "तत्काल: चिकित्सकीय जाँच आवश्यक", "Stop ascending and rest; do not go higher.": "और ऊपर न चढ़ें और आराम करें; ऊँचाई न बढ़ाएँ।", "Inform the medical officer for review today.": "आज ही जाँच के लिए चिकित्सा अधिकारी को सूचित करें।", "Descend if there is no clear improvement within a few hours or if symptoms get worse.": "कुछ घंटों में स्पष्ट सुधार न हो या लक्षण बढ़ें तो नीचे उतरें।", "Keep warm, drink fluids and avoid alcohol and exertion.": "गर्म रहें, तरल लें और शराब व परिश्रम से बचें।", "Repeat this check every few hours.": "हर कुछ घंटों में यह जाँच दोहराएँ।", "Mild AMS: stop ascending and rest": "हल्का AMS: और ऊपर न चढ़ें और आराम करें", "Stop ascending and rest at the same altitude.": "और ऊपर न चढ़ें और उसी ऊँचाई पर आराम करें।", "Drink fluids, keep warm, avoid alcohol and heavy exertion.": "तरल लें, गर्म रहें, शराब और भारी परिश्रम से बचें।", "Do not go higher until all symptoms have gone; descend if they persist or worsen.": "जब तक सभी लक्षण समाप्त न हों, ऊपर न जाएँ; लक्षण बने रहें या बढ़ें तो नीचे उतरें।", "Tell a companion or the medical officer, and repeat this check in a few hours.": "किसी साथी या चिकित्सा अधिकारी को बताएँ, और कुछ घंटों में यह जाँच दोहराएँ।", "No AMS by the Lake Louise criteria": "Lake Louise मानदंड के अनुसार AMS नहीं", "Continue to follow the gradual ascent and acclimatisation advice.": "क्रमिक चढ़ाई और अनुकूलन की सलाह का पालन करते रहें।", "Symptoms can appear later, especially in the first nights; repeat this check if you feel unwell.": "लक्षण बाद में, विशेषकर पहली रातों में, उभर सकते हैं; अस्वस्थ लगे तो यह जाँच दोहराएँ।", "Lake Louise AMS score not applicable": "Lake Louise AMS स्कोर लागू नहीं", "The AMS score applies after a recent gain in altitude. If you feel unwell, seek medical advice.": "AMS स्कोर ऊँचाई में हाल की वृद्धि के बाद लागू होता है। अस्वस्थ लगे तो चिकित्सकीय सलाह लें।", "Repeat this check after any further gain in altitude.": "ऊँचाई और बढ़ने पर यह जाँच दोहराएँ।"});
-Object.assign(HINDI,{"Keep typing: at least 3 letters.": "लिखते रहें: कम से कम 3 अक्षर।", "Try the first letters of the main place name, a nearby city, or use Manual coordinates.": "मुख्य स्थान के नाम के पहले अक्षर या किसी पास के शहर का नाम आज़माएँ, या “अक्षांश और देशांतर दर्ज करें” का उपयोग करें।", "No exact match for the extra words; showing places with the main name.": "अतिरिक्त शब्दों से सटीक मिलान नहीं मिला; मुख्य नाम वाले स्थान दिखाए जा रहे हैं।", "Showing the first 12. Type more letters or add the district to narrow the list.": "पहले 12 दिखाए गए हैं। सूची छोटी करने के लिए और अक्षर लिखें या ज़िला जोड़ें।", "Population": "जनसंख्या", "Location suggestions": "स्थान सुझाव", "Capital city": "राजधानी शहर", "State capital": "राज्य की राजधानी", "District headquarters": "जिला मुख्यालय", "Sub-district headquarters": "उप-जिला मुख्यालय", "Town or village": "कस्बा या गाँव", "Locality": "क्षेत्र", "Administrative centre": "प्रशासनिक केंद्र", "State or region": "राज्य या क्षेत्र", "District": "जिला", "Sub-district": "उप-जिला", "Airport": "हवाई अड्डा", "Air base": "वायुसेना अड्डा", "Type the first letters of the place name (at least 3), then pick one from the list. Places that share a name are shown with their district and state.": "स्थान के नाम के पहले अक्षर लिखें (कम से कम 3), फिर सूची में से चुनें। एक ही नाम वाले स्थान उनके ज़िले और राज्य के साथ दिखाए जाते हैं।"});
 let uiLanguage='en';
 const translationNodes=new WeakMap();
 const translationAttrs=new WeakMap();
@@ -1948,191 +1935,174 @@ async function reverseGeocode(lat, lon) {
   }
 }
 
-// ================== Location search ==================
-// The geocoding service matches places by the start of their name and returns the district, state, type, altitude and
-// population. Many Indian names are shared by several places (for example, several Bilaspurs), so each row carries enough
-// detail to tell them apart; the list stays open while it is touched or scrolled, keeps its position when navigated by
-// keyboard, and sizes itself to the room left above the on-screen keyboard.
-const LOC_FETCH_COUNT = 20, LOC_MAX_SHOWN = 12;
-const LOC_KIND = { PPLC: 'Capital city', PPLA: 'State capital', PPLA2: 'District headquarters', PPLA3: 'Sub-district headquarters', PPLA4: 'Sub-district headquarters',
-  PPL: 'Town or village', PPLS: 'Town or village', PPLX: 'Locality', PPLL: 'Locality', PPLG: 'Administrative centre',
-  ADM1: 'State or region', ADM2: 'District', ADM3: 'Sub-district', ADM4: 'Sub-district', AIRP: 'Airport', AIRB: 'Air base' };
-const locCache = new Map();
-let locationSearchTimer = null, locationSearchRequest = 0, locationMatches = [], activeLocationIndex = -1, selectedLocation = null, locPointerInside = false, locShowNote = '', locShowMore = false;
-
-function locationLabel(place) {            // used for the search box, the status line and pinned places
-  return [place.name, place.admin2, place.admin1, place.country].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(', ');
-}
-async function locFetch(name, count) {
-  const lang = uiLanguage === 'hi' ? 'hi' : 'en', key = lang + '|' + count + '|' + name.toLowerCase();
-  if (locCache.has(key)) return locCache.get(key);
-  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=${count}&language=${lang}&format=json`);
-  if (!res.ok) throw new Error('Location search failed (' + res.status + ').');
-  const data = await res.json(), list = data.results || [];
-  if (locCache.size > 40) locCache.delete(locCache.keys().next().value);
-  locCache.set(key, list); return list;
-}
-// Removes repeats, puts India first and populated places before administrative areas, and keeps the service's own order otherwise.
-function rankPlaces(list) {
-  const seen = new Set(), out = [];
-  for (const p of list) {
-    if (!Number.isFinite(p.latitude) || !Number.isFinite(p.longitude)) continue;
-    const k = [p.name, p.admin1, p.admin2, p.country_code || p.country, p.feature_code].map(x => String(x || '').toLowerCase()).join('|');
-    if (seen.has(k)) continue; seen.add(k); out.push(p);
-  }
-  const score = p => (p.country_code === 'IN' ? 0 : 2) + (/^PPL/.test(p.feature_code || '') ? 0 : 1);
-  return out.map((p, i) => ({ p, i })).sort((x, y) => score(x.p) - score(y.p) || x.i - y.i).map(x => x.p);
-}
-// Searches as typed; if that finds nothing for a "place, state" or multi-word query, retries with the main name and narrows by the extra words.
-async function searchPlaces(query) {
-  const q = query.trim().replace(/\s+/g, ' ');
-  let list = await locFetch(q, LOC_FETCH_COUNT), note = '';
-  if (!list.length) {
-    const parts = q.split(/[,;]+/).map(x => x.trim()).filter(Boolean), words = q.split(/[\s,;]+/).filter(Boolean), attempts = [];
-    if (parts.length > 1) attempts.push({ name: parts[0], extra: parts.slice(1).join(' ') });                  // "Leh, Ladakh"
-    if (words.length > 1) { attempts.push({ name: words.join(''), extra: '' }); attempts.push({ name: words[0], extra: words.slice(1).join(' ') }); }   // "Shakur Basti"; "Leh Ladakh India"
-    for (const a of attempts) {
-      if (a.name.length < 2) continue;
-      const found = await locFetch(a.name, LOC_FETCH_COUNT); if (!found.length) continue;
-      if (!a.extra) { list = found; break; }
-      const need = a.extra.toLowerCase().split(/[\s,;]+/).filter(Boolean);
-      const words2 = p => [p.admin1, p.admin2, p.admin3, p.country, p.country_code].filter(Boolean).join(' ').toLowerCase().split(/[\s,]+/);
-      const matched = found.filter(p => need.every(w => words2(p).some(t => t.startsWith(w))));
-      if (matched.length) { list = matched; } else { list = found; note = 'No exact match for the extra words; showing places with the main name.'; }
-      break;
-    }
-  }
-  const ranked = rankPlaces(list);
-  return { places: ranked.slice(0, LOC_MAX_SHOWN), more: ranked.length > LOC_MAX_SHOWN || list.length >= LOC_FETCH_COUNT, note };
-}
-async function searchLocation(query) {     // used by Refresh when the user typed a name without picking from the list
+async function searchLocation(query) {
   const name = query.trim();
   if (!name) throw new Error('Enter a city or location to search.');
-  const { places } = await searchPlaces(name);
-  if (!places.length) throw new Error('Location not found. Try a more specific place name.');
-  const p = places[0];
-  return { lat: p.latitude, lon: p.longitude, label: locationLabel(p) || name };
+
+  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=en&format=json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Location search failed (' + res.status + ').');
+  const data = await res.json();
+  if (!data.results || !data.results.length) throw new Error('Location not found. Try a more specific place name.');
+
+  const place = data.results[0];
+  const label = [place.name, place.admin1, place.country].filter(Boolean)
+    .filter((value, index, values) => values.indexOf(value) === index)
+    .join(', ');
+  return {lat: place.latitude, lon: place.longitude, label: label || name};
 }
 
-const locBox = () => document.getElementById('locationSuggestions');
-function sizeLocationList() {
-  const box = locBox(), input = document.getElementById('locationSearch'), vv = window.visualViewport;
-  const bottom = (vv ? vv.offsetTop + vv.height : window.innerHeight), room = bottom - input.getBoundingClientRect().bottom - 16;
-  box.style.maxHeight = Math.max(150, Math.min(380, room)) + 'px';
+let locationSearchTimer = null;
+let locationSearchRequest = 0;
+let locationMatches = [];
+let activeLocationIndex = -1;
+let selectedLocation = null;
+
+function locationLabel(place) {
+  return [place.name, place.admin1, place.country].filter(Boolean)
+    .filter((value, index, values) => values.indexOf(value) === index)
+    .join(', ');
 }
+
 function hideLocationSuggestions() {
-  locBox().classList.add('hidden');
-  const input = document.getElementById('locationSearch'); input.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-activedescendant');
+  const box = document.getElementById('locationSuggestions');
+  box.classList.add('hidden');
+  document.getElementById('locationSearch').setAttribute('aria-expanded', 'false');
   activeLocationIndex = -1;
 }
+
 function updateLocationClearButton() {
-  document.getElementById('clearLocationSearch').classList.toggle('visible', document.getElementById('locationSearch').value.length > 0);
+  document.getElementById('clearLocationSearch').classList.toggle(
+    'visible',
+    document.getElementById('locationSearch').value.length > 0
+  );
 }
-function showLocationMessage(message, hint) {
-  const box = locBox(); box.replaceChildren();
-  const row = document.createElement('div'); row.className = 'location-empty'; row.setAttribute('role', 'presentation'); row.textContent = message; box.appendChild(row);
-  if (hint) { const h = document.createElement('div'); h.className = 'location-note'; h.setAttribute('role', 'presentation'); h.textContent = hint; box.appendChild(h); }
-  sizeLocationList(); box.classList.remove('hidden'); document.getElementById('locationSearch').setAttribute('aria-expanded', 'true');
+
+function showLocationMessage(message) {
+  const box = document.getElementById('locationSuggestions');
+  box.innerHTML = '';
+  const row = document.createElement('div');
+  row.className = 'location-empty';
+  row.textContent = message;
+  box.appendChild(row);
+  box.classList.remove('hidden');
+  document.getElementById('locationSearch').setAttribute('aria-expanded', 'true');
 }
+
 function chooseLocation(index) {
   const place = locationMatches[index];
   if (!place) return;
   const label = locationLabel(place) || place.name;
-  selectedLocation = { lat: place.latitude, lon: place.longitude, label, inputValue: label };
-  const input = document.getElementById('locationSearch'); input.value = label;
-  updateLocationClearButton(); hideLocationSuggestions();
-  if (window.innerWidth <= 760) input.blur();             // close the on-screen keyboard so the result is visible
-  if (document.getElementById('sourceSelect').value === 'location') fetchAndPlot();
-}
-function setActiveLocation(index, scroll) {
-  const box = locBox(), input = document.getElementById('locationSearch');
-  activeLocationIndex = index;
-  box.querySelectorAll('.location-option').forEach((o, i) => { const on = i === index; o.classList.toggle('active', on); o.setAttribute('aria-selected', on ? 'true' : 'false'); if (on) { input.setAttribute('aria-activedescendant', o.id); if (scroll) o.scrollIntoView({ block: 'nearest' }); } });
-  if (index < 0) input.removeAttribute('aria-activedescendant');
-}
-function renderLocationSuggestions() {
-  const box = locBox(); box.replaceChildren();
-  if (!locationMatches.length) {
-    showLocationMessage('No matching locations found', 'Try the first letters of the main place name, a nearby city, or use Manual coordinates.'); return;
-  }
-  const sep = () => document.createTextNode(' · ');
-  locationMatches.forEach((place, index) => {
-    const opt = document.createElement('div');
-    opt.className = 'location-option'; opt.id = 'loc-opt-' + index; opt.dataset.index = index; opt.setAttribute('role', 'option'); opt.setAttribute('aria-selected', 'false');
-    const main = document.createElement('div'); main.className = 'loc-main';
-    const nm = document.createElement('span'); nm.className = 'loc-name'; nm.textContent = place.name; main.appendChild(nm); main.appendChild(document.createTextNode(' '));
-    const qual = [place.admin2, place.admin1, place.country].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i && v !== place.name).join(', ');
-    if (qual) { const q = document.createElement('span'); q.className = 'loc-qual'; q.textContent = qual; main.appendChild(q); }
-    opt.appendChild(main); opt.appendChild(document.createTextNode(' '));
-    const meta = document.createElement('div'); meta.className = 'loc-meta'; const bits = [];
-    if (LOC_KIND[place.feature_code]) { const k = document.createElement('span'); k.textContent = LOC_KIND[place.feature_code]; bits.push([k]); }
-    if (Number.isFinite(place.elevation)) { const l = document.createElement('span'); l.textContent = 'Altitude'; bits.push([l, document.createTextNode(' ' + Math.round(place.elevation).toLocaleString() + ' m')]); }
-    if (place.population > 0) { const l = document.createElement('span'); l.textContent = 'Population'; bits.push([l, document.createTextNode(' ' + Number(place.population).toLocaleString('en-IN'))]); }
-    bits.forEach((nodes, n) => { if (n) meta.appendChild(sep()); nodes.forEach(x => meta.appendChild(x)); });
-    if (bits.length) opt.appendChild(meta);
-    box.appendChild(opt);
-  });
-  for (const msg of [locShowNote, locShowMore ? 'Showing the first 12. Type more letters or add the district to narrow the list.' : '']) {
-    if (!msg) continue; const n = document.createElement('div'); n.className = 'location-note'; n.setAttribute('role', 'presentation'); n.textContent = msg; box.appendChild(n);
-  }
-  sizeLocationList(); box.classList.remove('hidden'); document.getElementById('locationSearch').setAttribute('aria-expanded', 'true');
-  box.scrollTop = 0; setActiveLocation(-1, false);
-}
-async function updateLocationSuggestions() {
-  const input = document.getElementById('locationSearch'), query = input.value.trim();
-  selectedLocation = null;
-  if (query.length < 3) { locationMatches = []; if (query.length) showLocationMessage('Keep typing: at least 3 letters.'); else hideLocationSuggestions(); return; }
-  const requestId = ++locationSearchRequest;
-  showLocationMessage('Searching locations…');
-  try {
-    const r = await searchPlaces(query);
-    if (requestId !== locationSearchRequest || input.value.trim() !== query) return;
-    locationMatches = r.places; locShowNote = r.note; locShowMore = r.more && r.places.length >= LOC_MAX_SHOWN;
-    renderLocationSuggestions();
-  } catch (e) {
-    if (requestId === locationSearchRequest) { locationMatches = []; showLocationMessage('Could not load suggestions. Check the internet connection and try again.'); }
+  selectedLocation = {lat: place.latitude, lon: place.longitude, label, inputValue: label};
+  document.getElementById('locationSearch').value = label;
+  updateLocationClearButton();
+  hideLocationSuggestions();
+  if (document.getElementById('sourceSelect').value === 'location') {
+    fetchAndPlot();
   }
 }
 
-const locationSearchInput = document.getElementById('locationSearch'), locationBox = locBox();
+function renderLocationSuggestions() {
+  const box = document.getElementById('locationSuggestions');
+  box.innerHTML = '';
+
+  if (!locationMatches.length) {
+    const empty = document.createElement('div');
+    empty.className = 'location-empty';
+    empty.textContent = 'No matching locations found';
+    box.appendChild(empty);
+  } else {
+    locationMatches.forEach((place, index) => {
+      const option = document.createElement('div');
+      option.className = 'location-option' + (index === activeLocationIndex ? ' active' : '');
+      option.setAttribute('role', 'option');
+      option.textContent = locationLabel(place) || place.name;
+      option.addEventListener('click', event => {
+        chooseLocation(index);
+      });
+      box.appendChild(option);
+    });
+  }
+
+  box.classList.remove('hidden');
+  document.getElementById('locationSearch').setAttribute('aria-expanded', 'true');
+}
+
+async function updateLocationSuggestions() {
+  const input = document.getElementById('locationSearch');
+  const query = input.value.trim();
+  selectedLocation = null;
+  if (query.length < 2) {
+    locationMatches = [];
+    hideLocationSuggestions();
+    return;
+  }
+
+  const requestId = ++locationSearchRequest;
+  showLocationMessage('Searching locations…');
+  try {
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=8&language=en&format=json`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Location suggestions unavailable.');
+    const data = await res.json();
+    if (requestId !== locationSearchRequest || input.value.trim() !== query) return;
+    locationMatches = data.results || [];
+    activeLocationIndex = -1;
+    renderLocationSuggestions();
+  } catch (e) {
+    if (requestId === locationSearchRequest) {
+      locationMatches = [];
+      showLocationMessage('Could not load suggestions. Check the internet connection and try again.');
+    }
+  }
+}
+
+const locationSearchInput = document.getElementById('locationSearch');
 locationSearchInput.addEventListener('input', () => {
-  setPinCandidate(null); updateLocationClearButton(); clearTimeout(locationSearchTimer);
-  const query = locationSearchInput.value.trim(); selectedLocation = null;
-  if (!query) { locationMatches = []; hideLocationSuggestions(); return; }
-  if (query.length < 3) { locationMatches = []; showLocationMessage('Keep typing: at least 3 letters.'); return; }
+  setPinCandidate(null);
+  updateLocationClearButton();
+  clearTimeout(locationSearchTimer);
+  const query = locationSearchInput.value.trim();
+  selectedLocation = null;
+  if (query.length < 2) {
+    locationMatches = [];
+    hideLocationSuggestions();
+    return;
+  }
   showLocationMessage('Searching locations…');
   locationSearchTimer = setTimeout(updateLocationSuggestions, 200);
 });
 locationSearchInput.addEventListener('focus', () => {
-  if (window.innerWidth <= 760) { locationSearchInput.scrollIntoView({ block: 'start', behavior: 'smooth' }); setTimeout(() => { if (!locBox().classList.contains('hidden')) sizeLocationList(); }, 350); }
   if (locationMatches.length) renderLocationSuggestions();
 });
 locationSearchInput.addEventListener('keydown', event => {
-  const open = !locBox().classList.contains('hidden'), n = locationMatches.length;
-  if (event.key === 'Escape') { if (open) event.preventDefault(); hideLocationSuggestions(); return; }      // a search box clears itself on Esc; the first press should only close the list
-  if (event.key === 'Tab') { hideLocationSuggestions(); return; }
-  if (!n) return;
+  if (event.key === 'Escape') {
+    hideLocationSuggestions();
+    return;
+  }
+  if (!locationMatches.length || document.getElementById('locationSuggestions').classList.contains('hidden')) return;
   if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
     event.preventDefault();
-    if (!open) { renderLocationSuggestions(); }
     const step = event.key === 'ArrowDown' ? 1 : -1;
-    setActiveLocation(activeLocationIndex < 0 ? (step > 0 ? 0 : n - 1) : (activeLocationIndex + step + n) % n, true);
-  } else if (event.key === 'Home' && open) { event.preventDefault(); setActiveLocation(0, true); }
-  else if (event.key === 'End' && open) { event.preventDefault(); setActiveLocation(n - 1, true); }
-  else if (event.key === 'Enter' && open) { event.preventDefault(); chooseLocation(activeLocationIndex >= 0 ? activeLocationIndex : 0); }
+    activeLocationIndex = (activeLocationIndex + step + locationMatches.length) % locationMatches.length;
+    renderLocationSuggestions();
+  } else if (event.key === 'Enter' && activeLocationIndex >= 0) {
+    event.preventDefault();
+    chooseLocation(activeLocationIndex);
+  }
 });
-// The list must not close while it is touched or scrolled: keep focus in the box on mouse press, and note pointer use on touch.
-locationBox.addEventListener('mousedown', e => e.preventDefault());
-locationBox.addEventListener('pointerdown', () => { locPointerInside = true; });
-['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, () => { setTimeout(() => { locPointerInside = false; }, 0); }));
-locationBox.addEventListener('click', e => { const o = e.target.closest('.location-option'); if (o) chooseLocation(Number(o.dataset.index)); });
-locationBox.addEventListener('mouseover', e => { const o = e.target.closest('.location-option'); if (o) setActiveLocation(Number(o.dataset.index), false); });
-locationSearchInput.addEventListener('blur', () => setTimeout(() => { if (!locPointerInside && document.activeElement !== locationSearchInput) hideLocationSuggestions(); }, 150));
+locationSearchInput.addEventListener('blur', () => setTimeout(hideLocationSuggestions, 150));
 document.getElementById('clearLocationSearch').addEventListener('click', () => {
-  clearTimeout(locationSearchTimer); locationSearchRequest++; locationMatches = []; activeLocationIndex = -1; selectedLocation = null;
-  locationSearchInput.value = ''; updateLocationClearButton(); hideLocationSuggestions(); locationSearchInput.focus();
+  clearTimeout(locationSearchTimer);
+  locationSearchRequest++;
+  locationMatches = [];
+  activeLocationIndex = -1;
+  selectedLocation = null;
+  locationSearchInput.value = '';
+  updateLocationClearButton();
+  hideLocationSuggestions();
+  locationSearchInput.focus();
 });
-if (window.visualViewport) ['resize', 'scroll'].forEach(t => window.visualViewport.addEventListener(t, () => { if (!locBox().classList.contains('hidden')) sizeLocationList(); }));
 
 // ================== Data fetchers ==================
 async function fetchOpenMeteo(lat, lon, targetDate) {
